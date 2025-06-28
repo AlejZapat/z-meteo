@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Visualizador Climático v2.1.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.44.0/apexcharts.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>Visualizador Climático</h1>
+            <p>Análisis meteorológico de las últimas 48 horas</p>
+        </div>
+
+        <div class="control-panel">
+            <form id="weatherForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="locationSelect">Ubicación</label>
+                        <select id="locationSelect" required>
+                            <option value="">Seleccionar punto de medición...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endDate">Fecha final</label>
+                        <input type="date" id="endDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn-generate" id="submitBtn">
+                            Generar Análisis
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="coordinates-display" id="coordinatesDisplay" style="display: none;">
+                    <strong>Coordenadas:</strong> <span id="coordsText"></span>
+                </div>
+            </form>
+        </div>
+
+        <div id="loading" class="loading">Obteniendo datos meteorológicos</div>
+        <div id="error" class="error"></div>
+        
+        <div id="analysisContainer" style="display: none;">
+            <div class="tabs-container">
+                <div class="tabs-nav">
+                    <button class="tab-btn active" data-tab="executive">📋 Resumen Ejecutivo</button>
+                    <button class="tab-btn" data-tab="combined">📊 Análisis Combinado</button>
+                    <button class="tab-btn" data-tab="correlations">🔗 Correlaciones</button>
+                    <button class="tab-btn" data-tab="variables">📈 Variables</button>
+                </div>
+                
+                <div class="tabs-content">
+                    <!-- Tab: Resumen Ejecutivo -->
+                    <div id="executiveTab" class="tab-panel active">
+                        <div id="executiveSummary" class="executive-summary"></div>
+                        <div id="statsPanel" class="stats-grid"></div>
+                        <div class="dashboard-grid">
+                            <div id="alertsPanel" class="alert-panel">
+                                <div class="alert-title">
+                                    🚨 Sistema de Alertas
+                                    <button class="info-btn" onclick="toggleAlertInfo()">ℹ️</button>
+                                </div>
+                                <div id="alertInfo" class="alert-info-panel" style="display: none;">
+                                    <h4>📊 Cómo se calculan las alertas:</h4>
+                                    <div class="info-item">
+                                        <strong>❄️ Riesgo de Helada:</strong> Se detecta cuando la temperatura mínima cae por debajo de 0°C. Las heladas pueden dañar cultivos y afectar la infraestructura.
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>💨 Vientos Peligrosos:</strong> 
+                                        <ul>
+                                            <li>Moderados: 30-50 km/h - Dificultad para caminar, ramas se mueven</li>
+                                            <li>Peligrosos: >50 km/h - Riesgo de caída de árboles y daños estructurales</li>
+                                        </ul>
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>🔥 Temperatura Alta:</strong> >30°C - Riesgo de estrés térmico, mayor evaporación y demanda energética.
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>🌧️ Lluvia Intensa:</strong> >10mm/h - Posible acumulación de agua, drenaje saturado.
+                                    </div>
+                                </div>
+                                <div id="alertsList"></div>
+                            </div>
+                            <div id="patternsPanel" class="pattern-analysis">
+                                <div class="alert-title">📊 Análisis de Patrones</div>
+                                <div id="patternsList"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab: Análisis Combinado -->
+                    <div id="combinedTab" class="tab-panel">
+                        <div id="combinedChartContainer" class="chart-card">
+                            <div class="chart-title">📈 Análisis Combinado - Temperatura, Humedad y Presión</div>
+                            <div id="combinedChart" style="height: 400px;"></div>
+                            <div class="chart-explanation">
+                                <h4>🔍 ¿Qué buscamos en este análisis?</h4>
+                                <div class="explanation-grid">
+                                    <div class="explanation-item">
+                                        <strong>🌡️ Temperatura (Rojo):</strong> Patrón de calentamiento/enfriamiento diurno. Busca picos, valles y tendencias generales.
+                                    </div>
+                                    <div class="explanation-item">
+                                        <strong>💧 Humedad (Verde):</strong> Inversamente relacionada con temperatura. Alta humedad + baja temperatura = posible condensación/niebla.
+                                    </div>
+                                    <div class="explanation-item">
+                                        <strong>📊 Presión (Azul):</strong> Cambios indican sistemas meteorológicos. Caídas bruscas = mal tiempo entrante, subidas = mejora del clima.
+                                    </div>
+                                </div>
+                                <div class="key-insights">
+                                    <strong>💡 Patrones clave a observar:</strong>
+                                    <ul>
+                                        <li><strong>Correlación inversa temp-humedad:</strong> Normal en ciclos diarios</li>
+                                        <li><strong>Presión estable:</strong> Tiempo predecible</li>
+                                        <li><strong>Todos los valores cambiando juntos:</strong> Sistema frontal pasando</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab: Correlaciones -->
+                    <div id="correlationsTab" class="tab-panel">
+                        <div class="chart-card">
+                            <div class="chart-title">🔗 Matriz de Correlaciones entre Variables Meteorológicas</div>
+                            <div class="correlation-info">
+                                <p><strong>Interpretación:</strong> Los valores van de -1 (correlación negativa perfecta) a +1 (correlación positiva perfecta). El 0 indica ausencia de correlación lineal.</p>
+                            </div>
+                            <div id="correlationChart" style="height: 500px;"></div>
+                        </div>
+                        
+                        <div class="correlation-insights">
+                            <div class="chart-title">🔍 Insights de Correlaciones</div>
+                            <div id="correlationInsights" class="insights-container"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab: Variables -->
+                    <div id="variablesTab" class="tab-panel">
+                        <div id="chartsContainer" class="charts-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Desarrollado por <strong>Tu Nombre</strong> - Visualizador Climático v2.3.0</p>
+            <p>Datos meteorológicos proporcionados por <a href="https://open-meteo.com/" target="_blank">Open-Meteo API</a></p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Visualizador Climático</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.44.0/apexcharts.min.js"></script>
+    <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;color:#2d3748;display:flex;flex-direction:column}.main-container{max-width:1400px;padding:2rem;flex:1}.header{text-align:center;margin-bottom:3rem}.header h1{font-size:2.5rem;font-weight:700;color:#fff;margin-bottom:.5rem;text-shadow:0 2px 4px rgb(0 0 0 / .3)}.header p{font-size:1.1rem;color:rgb(255 255 255 / .9);font-weight:300}.control-panel{background:rgb(255 255 255 / .95);backdrop-filter:blur(10px);border-radius:20px;padding:2rem;margin-bottom:2rem;box-shadow:0 20px 40px rgb(0 0 0 / .1);border:1px solid rgb(255 255 255 / .2)}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;align-items:end}.form-group{display:flex;flex-direction:column}.form-group label{font-weight:600;color:#4a5568;margin-bottom:.5rem;font-size:.875rem;text-transform:uppercase;letter-spacing:.05em}.form-group select,.form-group input{padding:.75rem 1rem;border:2px solid #e2e8f0;border-radius:12px;font-size:1rem;transition:all 0.3s ease;background:#fff;width:fit-content}.form-group select:focus,.form-group input:focus{outline:none;border-color:#667eea;box-shadow:0 0 0 3px rgb(102 126 234 / .1)}.btn-generate{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;padding:.875rem 2rem;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s ease;text-transform:uppercase;letter-spacing:.05em;box-shadow:0 4px 15px rgb(102 126 234 / .4)}.btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgb(102 126 234 / .6)}.btn-generate:disabled{opacity:.6;cursor:not-allowed;transform:none}.loading{text-align:center;padding:2rem;color:#fff;font-size:1.1rem;display:none}.loading::after{content:'';display:inline-block;width:20px;height:20px;border:2px solid rgb(255 255 255 / .3);border-radius:50%;border-top-color:#fff;animation:spin 1s ease-in-out infinite;margin-left:.5rem}@keyframes spin{to{transform:rotate(360deg)}}.error{background:linear-gradient(135deg,#e53e3e 0%,#c53030 100%);color:#fff;padding:1rem 1.5rem;border-radius:12px;margin:1rem 0;display:none;box-shadow:0 4px 15px rgb(229 62 62 / .4)}.tabs-container{background:rgb(255 255 255 / .95);backdrop-filter:blur(10px);border-radius:20px;overflow:hidden;box-shadow:0 20px 40px rgb(0 0 0 / .1);border:1px solid rgb(255 255 255 / .2)}.tabs-nav{display:flex;background:rgb(102 126 234 / .1);border-bottom:1px solid rgb(102 126 234 / .2)}.tab-btn{flex:1;padding:1rem 1.5rem;background:#fff0;border:none;color:#4a5568;font-weight:600;font-size:.9rem;cursor:pointer;transition:all 0.3s ease;border-bottom:3px solid #fff0;text-align:center}.tab-btn:hover{background:rgb(102 126 234 / .1);color:#667eea}.tab-btn.active{background:rgb(102 126 234 / .15);color:#667eea;border-bottom-color:#667eea}.tabs-content{padding:2rem}.tab-panel{display:none}.tab-panel.active{display:block}.charts-container{display:flex;flex-direction:column;gap:1.5rem}.chart-card{background:rgb(255 255 255 / .95);backdrop-filter:blur(10px);border-radius:16px;padding:1.5rem;box-shadow:0 10px 30px rgb(0 0 0 / .1);border:1px solid rgb(255 255 255 / .2);transition:transform 0.3s ease}.chart-card:hover{transform:translateY(-2px)}.chart-title{font-size:1.25rem;font-weight:600;color:#2d3748;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:2px solid #e2e8f0}.coordinates-display{background:rgb(255 255 255 / .1);padding:.75rem 1rem;border-radius:8px;color:rgb(255 255 255 / .9);font-size:.875rem;margin-top:.5rem}.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-bottom:2rem}.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}.stat-card{background:rgb(255 255 255 / .95);backdrop-filter:blur(10px);border-radius:12px;padding:1.5rem;text-align:center;box-shadow:0 8px 25px rgb(0 0 0 / .1);border:1px solid rgb(255 255 255 / .2);transition:transform 0.3s ease}.stat-card:hover{transform:translateY(-2px)}.stat-value{font-size:2rem;font-weight:700;color:#2d3748;margin-bottom:.5rem}.stat-label{font-size:.875rem;color:#718096;text-transform:uppercase;letter-spacing:.05em}.stat-unit{font-size:1rem;color:#4a5568;font-weight:500}.alert-panel{background:rgb(255 255 255 / .95);backdrop-filter:blur(10px);border-radius:16px;padding:1.5rem;margin-bottom:2rem;box-shadow:0 10px 30px rgb(0 0 0 / .1);border:1px solid rgb(255 255 255 / .2)}.alert-title{font-size:1.25rem;font-weight:600;color:#2d3748;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}.alert-item{padding:.75rem 1rem;border-radius:8px;margin-bottom:.5rem;display:flex;align-items:center;gap:.75rem;font-weight:500}.alert-high{background:linear-gradient(135deg,#fed7d7 0%,#feb2b2 100%);color:#c53030;border-left:4px solid #e53e3e}.alert-medium{background:linear-gradient(135deg,#feebc8 0%,#fbd38d 100%);color:#dd6b20;border-left:4px solid #ed8936}.alert-low{background:linear-gradient(135deg,#c6f6d5 0%,#9ae6b4 100%);color:#2f855a;border-left:4px solid #38a169}.alert-icon{font-size:1.2rem}.pattern-analysis{background:rgb(255 255 255 / .95);backdrop-filter:blur(10px);border-radius:16px;padding:1.5rem;margin-bottom:2rem;box-shadow:0 10px 30px rgb(0 0 0 / .1);border:1px solid rgb(255 255 255 / .2)}.pattern-item{padding:1rem;border-radius:8px;margin-bottom:1rem;background:#f7fafc;border-left:4px solid #667eea}.pattern-title{font-weight:600;color:#2d3748;margin-bottom:.5rem}.pattern-value{color:#4a5568;font-size:.9rem}.executive-summary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border-radius:16px;padding:2rem;margin-bottom:2rem;box-shadow:0 10px 30px rgb(102 126 234 / .4)}.summary-title{font-size:1.5rem;font-weight:700;margin-bottom:1rem;text-align:center}.summary-subtitle{text-align:center;font-weight:700;font-size:1.125rem;color:rgb(255 255 255 / .65);margin-bottom:1.5rem;line-height:1.4}.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:1rem}.summary-item{text-align:center;padding:1rem;background:rgb(255 255 255 / .1);border-radius:8px;backdrop-filter:blur(5px)}.summary-value{font-size:1.5rem;font-weight:600;margin-bottom:.25rem}.summary-label{font-size:.8rem;opacity:.9}.no-alerts{text-align:center;color:#68d391;font-weight:500;padding:1rem;background:rgb(104 211 145 / .1);border-radius:8px}.correlation-info{background:rgb(102 126 234 / .1);padding:1rem;border-radius:8px;margin-bottom:1.5rem;border-left:4px solid #667eea}.correlation-info p{margin:0;color:#4a5568;font-size:.9rem;line-height:1.4}.correlation-insights{background:rgb(255 255 255 / .95);backdrop-filter:blur(10px);border-radius:16px;padding:1.5rem;margin-top:2rem;box-shadow:0 10px 30px rgb(0 0 0 / .1);border:1px solid rgb(255 255 255 / .2)}.insights-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;margin-top:1rem}.insight-item{padding:1rem;border-radius:8px;border-left:4px solid;background:#f7fafc}.insight-strong{border-left-color:#e53e3e;background:linear-gradient(135deg,#fed7d7 0%,#feb2b2 100%)}.insight-moderate{border-left-color:#ed8936;background:linear-gradient(135deg,#feebc8 0%,#fbd38d 100%)}.insight-weak{border-left-color:#38a169;background:linear-gradient(135deg,#c6f6d5 0%,#9ae6b4 100%)}.insight-title{font-weight:600;color:#2d3748;margin-bottom:.5rem;font-size:1rem}.insight-value{color:#4a5568;font-size:.9rem;margin-bottom:.25rem}.insight-description{color:#718096;font-size:.8rem;font-style:italic}.footer{background:rgb(255 255 255 / .1);backdrop-filter:blur(10px);border-top:1px solid rgb(255 255 255 / .2);padding:2rem 0;margin-top:auto;text-align:center}.footer-content{max-width:1400px;margin:0 auto;padding:0 2rem}.footer-content p{color:rgb(255 255 255 / .9);margin:.5rem 0;font-size:.9rem}.footer-content strong{color:#fff;font-weight:600}.footer-content a{color:rgb(255 255 255 / .8);text-decoration:none;transition:color 0.3s ease}.footer-content a:hover{color:#fff;text-decoration:underline}.info-btn{background:rgb(102 126 234 / .2);border:1px solid rgb(102 126 234 / .3);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:#667eea;transition:all 0.3s ease;margin-left:auto}.info-btn:hover{background:rgb(102 126 234 / .3);transform:scale(1.1)}.alert-info-panel{background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);border:1px solid #dee2e6;border-radius:12px;padding:1rem;margin:1rem 0;box-shadow:0 2px 8px rgb(0 0 0 / .1);animation:slideDown 0.3s ease-out}@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}.alert-info-panel h4{color:#2d3748;margin-bottom:.75rem;font-size:1rem;border-bottom:2px solid #667eea;padding-bottom:.5rem}.info-item{margin-bottom:.75rem;padding:.5rem;background:#fff;border-radius:6px;border-left:3px solid #667eea}.info-item strong{color:#2d3748;display:block;margin-bottom:.25rem}.info-item ul{margin:.5rem 0 0 1rem;color:#4a5568}.info-item li{margin-bottom:.25rem;font-size:.85rem}.chart-explanation{background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);border-radius:12px;padding:1.5rem;margin-top:1.5rem;border-left:4px solid #667eea}.chart-explanation h4{color:#2d3748;margin-bottom:1rem;font-size:1.1rem;border-bottom:2px solid #667eea;padding-bottom:.5rem}.explanation-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-bottom:1rem}.explanation-item{background:#fff;padding:.75rem;border-radius:8px;border-left:3px solid #667eea;font-size:.9rem;line-height:1.4}.explanation-item strong{color:#2d3748;display:block;margin-bottom:.25rem}.key-insights{background:rgb(102 126 234 / .1);padding:1rem;border-radius:8px;margin-top:1rem}.key-insights strong{color:#2d3748;display:block;margin-bottom:.5rem}.key-insights ul{margin:0;padding-left:1.5rem;color:#4a5568}.key-insights li{margin-bottom:.25rem;font-size:.9rem;line-height:1.3}@media (max-width:768px){.main-container{padding:1rem}.header h1{font-size:2rem}.form-grid{grid-template-columns:1fr;gap:1rem}.control-panel{padding:1.5rem}.form-group select,.form-group input{width:100%}.stats-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}.summary-grid{grid-template-columns:repeat(2,1fr)}.tabs-nav{flex-direction:column}.tab-btn{border-radius:0;border-bottom:1px solid rgb(102 126 234 / .2);border-left:3px solid #fff0}.tab-btn.active{border-bottom-color:rgb(102 126 234 / .2);border-left-color:#667eea}.tabs-content{padding:1rem}}</style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>Visualizador Climático</h1>
+            <p>Análisis meteorológico de las últimas 48 horas</p>
+        </div>
+
+        <div class="control-panel">
+            <form id="weatherForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="locationSelect">Ubicación</label>
+                        <select id="locationSelect" required>
+                            <option value="">Seleccionar punto de medición...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endDate">Fecha final</label>
+                        <input type="date" id="endDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn-generate" id="submitBtn">
+                            Generar Análisis
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="coordinates-display" id="coordinatesDisplay" style="display: none;">
+                    <strong>Coordenadas:</strong> <span id="coordsText"></span>
+                </div>
+            </form>
+        </div>
+
+        <div id="loading" class="loading">Obteniendo datos meteorológicos</div>
+        <div id="error" class="error"></div>
+        
+        <div id="analysisContainer" style="display: none;">
+            <div class="tabs-container">
+                <div class="tabs-nav">
+                    <button class="tab-btn active" data-tab="executive">📋 Resumen Ejecutivo</button>
+                    <button class="tab-btn" data-tab="combined">📊 Análisis Combinado</button>
+                    <button class="tab-btn" data-tab="correlations">🔗 Correlaciones</button>
+                    <button class="tab-btn" data-tab="variables">📈 Variables</button>
+                </div>
+                
+                <div class="tabs-content">
+                    <!-- Tab: Resumen Ejecutivo -->
+                    <div id="executiveTab" class="tab-panel active">
+                        <div id="executiveSummary" class="executive-summary"></div>
+                        <div id="statsPanel" class="stats-grid"></div>
+                        <div class="dashboard-grid">
+                            <div id="alertsPanel" class="alert-panel">
+                                <div class="alert-title">
+                                    🚨 Sistema de Alertas
+                                    <button class="info-btn" onclick="toggleAlertInfo()">ℹ️</button>
+                                </div>
+                                <div id="alertInfo" class="alert-info-panel" style="display: none;">
+                                    <h4>📊 Cómo se calculan las alertas:</h4>
+                                    <div class="info-item">
+                                        <strong>❄️ Riesgo de Helada:</strong> Se detecta cuando la temperatura mínima cae por debajo de 0°C. Las heladas pueden dañar cultivos y afectar la infraestructura.
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>💨 Vientos Peligrosos:</strong> 
+                                        <ul>
+                                            <li>Moderados: 30-50 km/h - Dificultad para caminar, ramas se mueven</li>
+                                            <li>Peligrosos: >50 km/h - Riesgo de caída de árboles y daños estructurales</li>
+                                        </ul>
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>🔥 Temperatura Alta:</strong> >30°C - Riesgo de estrés térmico, mayor evaporación y demanda energética.
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>🌧️ Lluvia Intensa:</strong> >10mm/h - Posible acumulación de agua, drenaje saturado.
+                                    </div>
+                                </div>
+                                <div id="alertsList"></div>
+                            </div>
+                            <div id="patternsPanel" class="pattern-analysis">
+                                <div class="alert-title">📊 Análisis de Patrones</div>
+                                <div id="patternsList"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab: Análisis Combinado -->
+                    <div id="combinedTab" class="tab-panel">
+                        <div id="combinedChartContainer" class="chart-card">
+                            <div class="chart-title">📈 Análisis Combinado - Temperatura, Humedad y Presión</div>
+                            <div id="combinedChart" style="height: 400px;"></div>
+                            <div class="chart-explanation">
+                                <h4>🔍 ¿Qué buscamos en este análisis?</h4>
+                                <div class="explanation-grid">
+                                    <div class="explanation-item">
+                                        <strong>🌡️ Temperatura (Rojo):</strong> Patrón de calentamiento/enfriamiento diurno. Busca picos, valles y tendencias generales.
+                                    </div>
+                                    <div class="explanation-item">
+                                        <strong>💧 Humedad (Verde):</strong> Inversamente relacionada con temperatura. Alta humedad + baja temperatura = posible condensación/niebla.
+                                    </div>
+                                    <div class="explanation-item">
+                                        <strong>📊 Presión (Azul):</strong> Cambios indican sistemas meteorológicos. Caídas bruscas = mal tiempo entrante, subidas = mejora del clima.
+                                    </div>
+                                </div>
+                                <div class="key-insights">
+                                    <strong>💡 Patrones clave a observar:</strong>
+                                    <ul>
+                                        <li><strong>Correlación inversa temp-humedad:</strong> Normal en ciclos diarios</li>
+                                        <li><strong>Presión estable:</strong> Tiempo predecible</li>
+                                        <li><strong>Todos los valores cambiando juntos:</strong> Sistema frontal pasando</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab: Correlaciones -->
+                    <div id="correlationsTab" class="tab-panel">
+                        <div class="chart-card">
+                            <div class="chart-title">🔗 Matriz de Correlaciones entre Variables Meteorológicas</div>
+                            <div class="correlation-info">
+                                <p><strong>Interpretación:</strong> Los valores van de -1 (correlación negativa perfecta) a +1 (correlación positiva perfecta). El 0 indica ausencia de correlación lineal.</p>
+                            </div>
+                            <div id="correlationChart" style="height: 500px;"></div>
+                        </div>
+                        
+                        <div class="correlation-insights">
+                            <div class="chart-title">🔍 Insights de Correlaciones</div>
+                            <div id="correlationInsights" class="insights-container"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab: Variables -->
+                    <div id="variablesTab" class="tab-panel">
+                        <div id="chartsContainer" class="charts-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Desarrollado por <strong>Luis Alejandro Zapata</strong> - Visualizador Climático v2.3.0</p>
+            <p>Datos meteorológicos proporcionados por <a href="https://open-meteo.com/" target="_blank">Open-Meteo API</a></p>
+        </div>
+    </footer>
+
+    <script>
+
+        // Coordenadas de los puntos de medición
+        const coordinates = [
+            { id: 'NPDA', lat: -30.120354, long: -71.219226},
+            { id: '1', lat: -30.120529, long: -71.219709},
+            { id: '2', lat: -30.121248, long: -71.222971},
+            { id: '3', lat: -30.122352, long: -71.226338},
+            { id: '4', lat: -30.123468, long: -71.229744},
+            { id: '5', lat: -30.124699, long: -71.233499},
+            { id: '6', lat: -30.125883, long: -71.237112},
+            { id: '7', lat: -30.127437, long: -71.241856},
+            { id: '8', lat: -30.130013, long: -71.243135},
+            { id: '9', lat: -30.132424, long: -71.244331},
+            { id: '10', lat: -30.134484, long: -71.245354},
+            { id: '11', lat: -30.137342, long: -71.246773},
+            { id: '12', lat: -30.141156, long: -71.248666},
+            { id: '13', lat: -30.143427, long: -71.249794},
+            { id: '14', lat: -30.146145, long: -71.251143},
+            { id: '15', lat: -30.149019, long: -71.25257},
+            { id: '16', lat: -30.154319, long: -71.255202},
+            { id: '17', lat: -30.157266, long: -71.256666},
+            { id: '18', lat: -30.16163, long: -71.258833},
+            { id: '19', lat: -30.168435, long: -71.262214},
+            { id: '20', lat: -30.169425, long: -71.262706},
+            { id: '21', lat: -30.172169, long: -71.267803},
+            { id: '22', lat: -30.174325, long: -71.271809},
+            { id: '23', lat: -30.17646, long: -71.275774},
+            { id: '24', lat: -30.178297, long: -71.279189},
+            { id: '25', lat: -30.181178, long: -71.284543},
+            { id: '26', lat: -30.183532, long: -71.288917},
+            { id: '27', lat: -30.186232, long: -71.293936},
+            { id: '28', lat: -30.188114, long: -71.297436},
+            { id: '29', lat: -30.188865, long: -71.298831},
+            { id: '30', lat: -30.191866, long: -71.304411},
+            { id: '31', lat: -30.194425, long: -71.309171},
+            { id: '32', lat: -30.19847, long: -71.31431},
+            { id: '33', lat: -30.200632, long: -71.317056},
+            { id: '34', lat: -30.203499, long: -71.320699},
+            { id: '35', lat: -30.207669, long: -71.325999},
+            { id: '36', lat: -30.210288, long: -71.329328},
+            { id: '37', lat: -30.212489, long: -71.332125},
+            { id: '38', lat: -30.214776, long: -71.335033},
+            { id: '39', lat: -30.217827, long: -71.338911},
+            { id: '40', lat: -30.221386, long: -71.343436},
+            { id: '41', lat: -30.223766, long: -71.346463},
+            { id: '42', lat: -30.226854, long: -71.35039},
+            { id: '43', lat: -30.229039, long: -71.353168},
+            { id: '44', lat: -30.233295, long: -71.358581},
+            { id: '45', lat: -30.236708, long: -71.362924},
+            { id: '46', lat: -30.239229, long: -71.366131},
+            { id: '47', lat: -30.242112, long: -71.3698},
+            { id: '48', lat: -30.24545, long: -71.374047},
+            { id: '49', lat: -30.248709, long: -71.378195},
+            { id: '50', lat: -30.251903, long: -71.38226},
+            { id: '51', lat: -30.255129, long: -71.386367},
+            { id: '52', lat: -30.257608, long: -71.389523},
+            { id: '53', lat: -30.261405, long: -71.390167},
+            { id: '54', lat: -30.265311, long: -71.390831},
+            { id: '55', lat: -30.269852, long: -71.391602},
+            { id: '56', lat: -30.273867, long: -71.392284},
+            { id: '57', lat: -30.278872, long: -71.393134},
+            { id: '58', lat: -30.283654, long: -71.393947},
+            { id: '59', lat: -30.287258, long: -71.394559},
+            { id: '60', lat: -30.291182, long: -71.395226},
+            { id: '61', lat: -30.295627, long: -71.395982},
+            { id: '62', lat: -30.299553, long: -71.396649},
+            { id: '63', lat: -30.302961, long: -71.397228},
+            { id: '64', lat: -30.307564, long: -71.398011},
+            { id: '65', lat: -30.311311, long: -71.398648},
+            { id: '66', lat: -30.312588, long: -71.398865},
+            { id: '67', lat: -30.317917, long: -71.399772},
+            { id: '68', lat: -30.324631, long: -71.400913},
+            { id: '69', lat: -30.327211, long: -71.401352},
+            { id: '70', lat: -30.332087, long: -71.402182},
+            { id: '71', lat: -30.336662, long: -71.40296},
+            { id: '72', lat: -30.340566, long: -71.403624},
+            { id: '73', lat: -30.345846, long: -71.404523},
+            { id: '74', lat: -30.350242, long: -71.405439},
+            { id: '75', lat: -30.350284, long: -71.40511},
+            { id: '76', lat: -30.35327, long: -71.405787},
+            { id: '77', lat: -30.355915, long: -71.406237},
+            { id: '78', lat: -30.36106, long: -71.407113},
+            { id: '79', lat: -30.363967, long: -71.407608},
+            { id: '80', lat: -30.368674, long: -71.408409},
+            { id: '81', lat: -30.372816, long: -71.409115},
+            { id: '82', lat: -30.377084, long: -71.409841},
+            { id: '83', lat: -30.380848, long: -71.412391},
+            { id: '84', lat: -30.384383, long: -71.414786},
+            { id: '85', lat: -30.38733, long: -71.416783},
+            { id: '86', lat: -30.390332, long: -71.418817},
+            { id: '87', lat: -30.394616, long: -71.42172},
+            { id: '88', lat: -30.398708, long: -71.424492},
+            { id: '89', lat: -30.402912, long: -71.427342},
+            { id: '90', lat: -30.407002, long: -71.430114},
+            { id: '91', lat: -30.411439, long: -71.433123},
+            { id: '92', lat: -30.415345, long: -71.43577},
+            { id: '93', lat: -30.418934, long: -71.438204},
+            { id: '94', lat: -30.421945, long: -71.440246},
+            { id: '95', lat: -30.42574, long: -71.442819},
+            { id: '96', lat: -30.42888, long: -71.444949},
+            { id: '97', lat: -30.431942, long: -71.447026},
+            { id: '98', lat: -30.43597, long: -71.449758},
+            { id: '99', lat: -30.439231, long: -71.45197},
+            { id: '100', lat: -30.441637, long: -71.453603},
+            { id: '101', lat: -30.445933, long: -71.456518},
+            { id: '102', lat: -30.447983, long: -71.457909},
+            { id: '103', lat: -30.453279, long: -71.461503},
+            { id: '104', lat: -30.456456, long: -71.463659},
+            { id: '105', lat: -30.46077, long: -71.466588},
+            { id: '106', lat: -30.461797, long: -71.469315},
+            { id: '107', lat: -30.462897, long: -71.472239},
+            { id: '108', lat: -30.46711, long: -71.475139},
+            { id: '109', lat: -30.47106, long: -71.477858},
+            { id: '110', lat: -30.475412, long: -71.480856},
+            { id: '111', lat: -30.479192, long: -71.483458},
+            { id: '112', lat: -30.482909, long: -71.486018},
+            { id: '113', lat: -30.487119, long: -71.488918},
+            { id: '114', lat: -30.490842, long: -71.491482},
+            { id: '115', lat: -30.494441, long: -71.493962},
+            { id: '116', lat: -30.497892, long: -71.49634},
+            { id: '117', lat: -30.501927, long: -71.499119},
+            { id: '118', lat: -30.507641, long: -71.503057},
+            { id: '119', lat: -30.509965, long: -71.504658},
+            { id: '120', lat: -30.513567, long: -71.505942},
+            { id: '121', lat: -30.517825, long: -71.507459},
+            { id: '122', lat: -30.521992, long: -71.508944},
+            { id: '123', lat: -30.525188, long: -71.510083},
+            { id: '124', lat: -30.528767, long: -71.511359},
+            { id: '125', lat: -30.531305, long: -71.512264},
+            { id: '126', lat: -30.534925, long: -71.513555},
+            { id: '127', lat: -30.539286, long: -71.515338},
+            { id: '128', lat: -30.543152, long: -71.516919},
+            { id: '129', lat: -30.547213, long: -71.51858},
+            { id: '130', lat: -30.551301, long: -71.520252},
+            { id: '131', lat: -30.555269, long: -71.52175},
+            { id: '132', lat: -30.559769, long: -71.523449},
+            { id: '133', lat: -30.563351, long: -71.524801},
+            { id: '134', lat: -30.566068, long: -71.525028},
+            { id: '135', lat: -30.570088, long: -71.525364},
+            { id: '136', lat: -30.574517, long: -71.525733},
+            { id: '137', lat: -30.578282, long: -71.526048},
+            { id: '138', lat: -30.581496, long: -71.526316},
+            { id: '139', lat: -30.584919, long: -71.526603},
+            { id: '140', lat: -30.589033, long: -71.526946},
+            { id: '141', lat: -30.593922, long: -71.527355},
+            { id: '142', lat: -30.597923, long: -71.527689},
+            { id: '143', lat: -30.602323, long: -71.528057},
+            { id: '144', lat: -30.607161, long: -71.528461},
+            { id: '145', lat: -30.610691, long: -71.528756},
+            { id: '146', lat: -30.614022, long: -71.529035},
+            { id: '147', lat: -30.616905, long: -71.529276},
+            { id: '148', lat: -30.621344, long: -71.529647},
+            { id: '149', lat: -30.6257, long: -71.530012},
+            { id: '150', lat: -30.63, long: -71.53112},
+            { id: '151', lat: -30.633706, long: -71.532075},
+            { id: '152', lat: -30.639822, long: -71.533651},
+            { id: '153', lat: -30.642827, long: -71.534425},
+            { id: '154', lat: -30.645438, long: -71.535098},
+            { id: '155', lat: -30.648975, long: -71.53601},
+            { id: '156', lat: -30.653671, long: -71.53722},
+            { id: '157', lat: -30.658213, long: -71.538392},
+            { id: '158', lat: -30.661159, long: -71.538036},
+            { id: '159', lat: -30.66441, long: -71.537644},
+            { id: '160', lat: -30.673381, long: -71.536563},
+            { id: '161', lat: -30.676528, long: -71.536771},
+            { id: '162', lat: -30.680878, long: -71.53706},
+            { id: '163', lat: -30.68884, long: -71.537588},
+            { id: '164', lat: -30.693887, long: -71.537923},
+            { id: '165', lat: -30.701513, long: -71.538429},
+            { id: '166', lat: -30.70323, long: -71.538543},
+            { id: '167', lat: -30.705559, long: -71.538697},
+            { id: '168', lat: -30.71192, long: -71.53912},
+            { id: '169', lat: -30.715284, long: -71.539343},
+            { id: '170', lat: -30.721879, long: -71.539781},
+            { id: '171', lat: -30.724859, long: -71.539979},
+            { id: '172', lat: -30.7284, long: -71.540214},
+            { id: '173', lat: -30.732229, long: -71.540469},
+            { id: '174', lat: -30.73541, long: -71.54068},
+            { id: '175', lat: -30.737939, long: -71.540848},
+            { id: '176', lat: -30.74132, long: -71.543593},
+            { id: '177', lat: -30.744835, long: -71.546445},
+            { id: '178', lat: -30.748425, long: -71.54936},
+            { id: '179', lat: -30.751974, long: -71.552241},
+            { id: '180', lat: -30.754657, long: -71.55442},
+            { id: '181', lat: -30.7582, long: -71.557296},
+            { id: '182', lat: -30.763166, long: -71.56133},
+            { id: '183', lat: -30.766597, long: -71.563576},
+            { id: '184', lat: -30.769963, long: -71.565781},
+            { id: '185', lat: -30.774248, long: -71.568588},
+            { id: '186', lat: -30.778502, long: -71.571374},
+            { id: '187', lat: -30.780415, long: -71.572628},
+            { id: '188', lat: -30.783648, long: -71.574746},
+            { id: '189', lat: -30.785931, long: -71.576241},
+            { id: '190', lat: -30.789114, long: -71.578327},
+            { id: '191', lat: -30.792055, long: -71.579433},
+            { id: '192', lat: -30.794199, long: -71.58024},
+            { id: '193', lat: -30.797132, long: -71.581343},
+            { id: '194', lat: -30.799799, long: -71.582346},
+            { id: '195', lat: -30.80235, long: -71.583305},
+            { id: '196', lat: -30.804804, long: -71.584228},
+            { id: '197', lat: -30.80747, long: -71.585231},
+            { id: '198', lat: -30.812509, long: -71.587127},
+            { id: '199', lat: -30.815279, long: -71.588652},
+            { id: '200', lat: -30.818044, long: -71.590175},
+            { id: '201', lat: -30.821003, long: -71.591036},
+            { id: '202', lat: -30.823866, long: -71.591869},
+            { id: '203', lat: -30.826197, long: -71.592548},
+            { id: '204', lat: -30.829196, long: -71.593421},
+            { id: '205', lat: -30.832196, long: -71.594293},
+            { id: '206', lat: -30.835248, long: -71.595182},
+            { id: '207', lat: -30.838256, long: -71.596057},
+            { id: '208', lat: -30.841308, long: -71.596946},
+            { id: '209', lat: -30.843845, long: -71.597684},
+            { id: '210', lat: -30.845138, long: -71.596717},
+            { id: '211', lat: -30.848208, long: -71.597562},
+            { id: '212', lat: -30.851278, long: -71.598407},
+            { id: '213', lat: -30.854349, long: -71.599252},
+            { id: '214', lat: -30.857419, long: -71.600098},
+            { id: '215', lat: -30.86049, long: -71.600943},
+            { id: '216', lat: -30.864443, long: -71.602032},
+            { id: '217', lat: -30.866562, long: -71.602615},
+            { id: '218', lat: -30.872173, long: -71.600341},
+            { id: '219', lat: -30.873774, long: -71.599693},
+            { id: '220', lat: -30.87665, long: -71.598527},
+            { id: '221', lat: -30.879948, long: -71.599434},
+            { id: '222', lat: -30.883347, long: -71.600368},
+            { id: '223', lat: -30.886325, long: -71.601186},
+            { id: '224', lat: -30.890096, long: -71.602223},
+            { id: '225', lat: -30.893816, long: -71.603246},
+            { id: '226', lat: -30.89813, long: -71.604433},
+            { id: '227', lat: -30.902821, long: -71.60413},
+            { id: '228', lat: -30.907121, long: -71.603853},
+            { id: '229', lat: -30.909833, long: -71.603678},
+            { id: '230', lat: -30.91464, long: -71.603537},
+            { id: '231', lat: -30.914624, long: -71.603202},
+            { id: '232', lat: -30.919235, long: -71.603073},
+            { id: '233', lat: -30.922558, long: -71.602936},
+            { id: '234', lat: -30.926468, long: -71.602776},
+            { id: '235', lat: -30.931027, long: -71.602589},
+            { id: '236', lat: -30.934289, long: -71.602455},
+            { id: '237', lat: -30.940781, long: -71.602189},
+            { id: '238', lat: -30.943922, long: -71.60206},
+            { id: '239', lat: -30.947796, long: -71.601901},
+            { id: '240', lat: -30.951851, long: -71.601734},
+            { id: '241', lat: -30.956483, long: -71.601544},
+            { id: '242', lat: -30.959375, long: -71.601425},
+            { id: '243', lat: -30.962718, long: -71.601288},
+            { id: '244', lat: -30.967629, long: -71.601087},
+            { id: '245', lat: -30.972522, long: -71.600886},
+            { id: '246', lat: -30.97562, long: -71.600758},
+            { id: '247', lat: -30.978946, long: -71.600622},
+            { id: '248', lat: -30.982794, long: -71.600464},
+            { id: '249', lat: -30.987119, long: -71.600286},
+            { id: '250', lat: -30.995096, long: -71.599959},
+            { id: '251', lat: -30.998166, long: -71.599833},
+            { id: '252', lat: -31.000567, long: -71.599733},
+            { id: '253', lat: -31.005084, long: -71.599296},
+            { id: '254', lat: -31.01013, long: -71.598807},
+            { id: '255', lat: -31.015507, long: -71.598285},
+            { id: '256', lat: -31.018494, long: -71.597995},
+            { id: '257', lat: -31.022002, long: -71.597655},
+            { id: '258', lat: -31.026099, long: -71.597257},
+            { id: '259', lat: -31.030598, long: -71.59682},
+            { id: '260', lat: -31.034949, long: -71.596398},
+            { id: '261', lat: -31.036584, long: -71.596239},
+            { id: '262', lat: -31.041668, long: -71.595746},
+            { id: '263', lat: -31.046293, long: -71.595297},
+            { id: '264', lat: -31.051495, long: -71.594792},
+            { id: '265', lat: -31.054643, long: -71.594486},
+            { id: '266', lat: -31.061253, long: -71.594849},
+            { id: '267', lat: -31.067194, long: -71.595175},
+            { id: '268', lat: -31.069226, long: -71.595286},
+            { id: '269', lat: -31.074662, long: -71.595585},
+            { id: '270', lat: -31.079054, long: -71.595826},
+            { id: '271', lat: -31.084559, long: -71.596128},
+            { id: '272', lat: -31.088461, long: -71.596342},
+            { id: '273', lat: -31.09092, long: -71.596477},
+            { id: '274', lat: -31.093062, long: -71.596595},
+            { id: '275', lat: -31.095998, long: -71.595652},
+            { id: '276', lat: -31.099772, long: -71.594441},
+            { id: '277', lat: -31.103321, long: -71.593301},
+            { id: '278', lat: -31.107217, long: -71.59205},
+            { id: '279', lat: -31.112774, long: -71.590266},
+            { id: '280', lat: -31.117045, long: -71.588894},
+            { id: '281', lat: -31.119697, long: -71.588759},
+            { id: '282', lat: -31.123001, long: -71.588591},
+            { id: '283', lat: -31.129431, long: -71.588263},
+            { id: '284', lat: -31.132944, long: -71.588084},
+            { id: '285', lat: -31.138963, long: -71.587778},
+            { id: '286', lat: -31.143759, long: -71.587534},
+            { id: '287', lat: -31.145903, long: -71.587424},
+            { id: '288', lat: -31.147158, long: -71.587361},
+            { id: '289', lat: -31.155443, long: -71.586938},
+            { id: '290', lat: -31.156741, long: -71.586872},
+            { id: '291', lat: -31.158134, long: -71.586752},
+            { id: '292', lat: -31.160803, long: -71.58652},
+            { id: '293', lat: -31.167261, long: -71.585961},
+            { id: '294', lat: -31.170477, long: -71.585682},
+            { id: '295', lat: -31.175163, long: -71.585275},
+            { id: '296', lat: -31.176674, long: -71.585194},
+            { id: '297', lat: -31.182111, long: -71.584899},
+            { id: '298', lat: -31.189155, long: -71.584062},
+            { id: '299', lat: -31.192857, long: -71.583741},
+            { id: '300', lat: -31.196544, long: -71.583422},
+            { id: '301', lat: -31.20498, long: -71.58269},
+            { id: '302', lat: -31.209471, long: -71.582301},
+            { id: '303', lat: -31.214926, long: -71.581827},
+            { id: '304', lat: -31.219685, long: -71.581415},
+            { id: '305', lat: -31.224038, long: -71.581037},
+            { id: '306', lat: -31.228973, long: -71.580609},
+            { id: '307', lat: -31.235549, long: -71.580152},
+            { id: '308', lat: -31.237291, long: -71.580031},
+            { id: '309', lat: -31.244171, long: -71.579553},
+            { id: '310', lat: -31.245832, long: -71.579437},
+            { id: '311', lat: -31.24895, long: -71.57922},
+            { id: '312', lat: -31.255743, long: -71.578748},
+            { id: '313', lat: -31.260047, long: -71.578449},
+            { id: '314', lat: -31.263904, long: -71.578181},
+            { id: '315', lat: -31.2674, long: -71.577937},
+            { id: '316', lat: -31.271384, long: -71.57766},
+            { id: '317', lat: -31.275859, long: -71.577349},
+            { id: '318', lat: -31.281647, long: -71.576947},
+            { id: '319', lat: -31.28809, long: -71.576499},
+            { id: '320', lat: -31.289211, long: -71.576421},
+            { id: '321', lat: -31.294291, long: -71.576067},
+            { id: '322', lat: -31.296022, long: -71.575947},
+            { id: '323', lat: -31.297463, long: -71.57592},
+            { id: '324', lat: -31.302331, long: -71.575831},
+            { id: '325', lat: -31.307373, long: -71.575738},
+            { id: '326', lat: -31.31121, long: -71.575668},
+            { id: '327', lat: -31.31542, long: -71.57559},
+            { id: '328', lat: -31.320331, long: -71.5755},
+            { id: '329', lat: -31.325696, long: -71.574377},
+            { id: '330', lat: -31.329901, long: -71.573497},
+            { id: '331', lat: -31.333091, long: -71.572829},
+            { id: '332', lat: -31.336333, long: -71.572518},
+            { id: '333', lat: -31.341402, long: -71.572032},
+            { id: '334', lat: -31.344807, long: -71.571705},
+            { id: '335', lat: -31.347036, long: -71.571491},
+            { id: '336', lat: -31.351034, long: -71.571108},
+            { id: '337', lat: -31.354688, long: -71.570757},
+            { id: '338', lat: -31.356403, long: -71.570593},
+            { id: '339', lat: -31.361159, long: -71.570136},
+            { id: '340', lat: -31.366233, long: -71.56965},
+            { id: '341', lat: -31.371377, long: -71.569156},
+            { id: '342', lat: -31.374794, long: -71.568828},
+            { id: '343', lat: -31.380007, long: -71.568328},
+            { id: '344', lat: -31.385116, long: -71.567838},
+            { id: '345', lat: -31.389524, long: -71.567415},
+            { id: '346', lat: -31.394754, long: -71.566912},
+            { id: '347', lat: -31.399873, long: -71.566421},
+            { id: '348', lat: -31.400908, long: -71.566226},
+            { id: '349', lat: -31.405105, long: -71.565432},
+            { id: '350', lat: -31.41037, long: -71.564436},
+            { id: '351', lat: -31.41594, long: -71.563383},
+            { id: '352', lat: -31.422427, long: -71.562155},
+            { id: '353', lat: -31.425951, long: -71.561489},
+            { id: '354', lat: -31.430442, long: -71.560639},
+            { id: '355', lat: -31.434807, long: -71.559813},
+            { id: '356', lat: -31.439056, long: -71.559009},
+            { id: '357', lat: -31.442105, long: -71.558533},
+            { id: '358', lat: -31.448151, long: -71.558952},
+            { id: '359', lat: -31.453207, long: -71.558921},
+            { id: '360', lat: -31.455453, long: -71.558907},
+            { id: '361', lat: -31.45828, long: -71.559932},
+            { id: '362', lat: -31.461487, long: -71.561094},
+            { id: '363', lat: -31.46492, long: -71.560356},
+            { id: '364', lat: -31.469155, long: -71.559445},
+            { id: '365', lat: -31.47236, long: -71.558756},
+            { id: '366', lat: -31.47515, long: -71.558156},
+            { id: '367', lat: -31.47988, long: -71.557139},
+            { id: '368', lat: -31.483026, long: -71.556462},
+            { id: '369', lat: -31.48707, long: -71.555592},
+            { id: '370', lat: -31.490746, long: -71.554802},
+            { id: '371', lat: -31.49581, long: -71.553712},
+            { id: '372', lat: -31.499747, long: -71.549652},
+            { id: '373', lat: -31.50241, long: -71.546906},
+            { id: '374', lat: -31.505121, long: -71.54411},
+            { id: '375', lat: -31.507111, long: -71.542058},
+            { id: '376', lat: -31.509239, long: -71.539863},
+            { id: '377', lat: -31.512378, long: -71.537671},
+            { id: '378', lat: -31.516667, long: -71.534873},
+            { id: '379', lat: -31.516519, long: -71.534584},
+            { id: '380', lat: -31.519797, long: -71.532491},
+            { id: '381', lat: -31.523022, long: -71.530238},
+            { id: '382', lat: -31.525205, long: -71.528714},
+            { id: '383', lat: -31.527041, long: -71.527365},
+            { id: '384', lat: -31.530355, long: -71.52493},
+            { id: '385', lat: -31.534488, long: -71.521893},
+            { id: '386', lat: -31.537841, long: -71.519428},
+            { id: '387', lat: -31.541013, long: -71.517097},
+            { id: '388', lat: -31.545154, long: -71.514053},
+            { id: '389', lat: -31.548217, long: -71.511801},
+            { id: '390', lat: -31.551689, long: -71.509248},
+            { id: '391', lat: -31.555, long: -71.506813},
+            { id: '392', lat: -31.559281, long: -71.503666},
+            { id: '393', lat: -31.562289, long: -71.501453},
+            { id: '394', lat: -31.567032, long: -71.497965},
+            { id: '395', lat: -31.568765, long: -71.496691},
+            { id: '396', lat: -31.573145, long: -71.494448},
+            { id: '397', lat: -31.575795, long: -71.493091},
+            { id: '398', lat: -31.578978, long: -71.491461},
+            { id: '399', lat: -31.586093, long: -71.487873},
+            { id: '400', lat: -31.590448, long: -71.489784},
+            { id: '401', lat: -31.59458, long: -71.491598},
+            { id: '402', lat: -31.598131, long: -71.493157},
+            { id: '403', lat: -31.602362, long: -71.495014},
+            { id: '404', lat: -31.608732, long: -71.499343},
+            { id: '405', lat: -31.611966, long: -71.501541},
+            { id: '406', lat: -31.613986, long: -71.502915},
+            { id: '407', lat: -31.618008, long: -71.505648},
+            { id: '408', lat: -31.622179, long: -71.508484},
+            { id: '409', lat: -31.625535, long: -71.510766},
+            { id: '410', lat: -31.630681, long: -71.514265},
+            { id: '411', lat: -31.632047, long: -71.515194},
+            { id: '412', lat: -31.634207, long: -71.516663},
+            { id: '413', lat: -31.640108, long: -71.517783},
+            { id: '414', lat: -31.642845, long: -71.518303},
+            { id: '415', lat: -31.649518, long: -71.51957},
+            { id: '416', lat: -31.653048, long: -71.52024},
+            { id: '417', lat: -31.65722, long: -71.521033},
+            { id: '418', lat: -31.662207, long: -71.52198},
+            { id: '419', lat: -31.666265, long: -71.522751},
+            { id: '420', lat: -31.670564, long: -71.523568},
+            { id: '421', lat: -31.675533, long: -71.52266},
+            { id: '422', lat: -31.679566, long: -71.521923},
+            { id: '423', lat: -31.684849, long: -71.520959},
+            { id: '424', lat: -31.688327, long: -71.520323},
+            { id: '425', lat: -31.693548, long: -71.519369},
+            { id: '426', lat: -31.697922, long: -71.51857},
+            { id: '427', lat: -31.702802, long: -71.517678},
+            { id: '428', lat: -31.707154, long: -71.516883},
+            { id: '429', lat: -31.712282, long: -71.515946},
+            { id: '430', lat: -31.716823, long: -71.515115},
+            { id: '431', lat: -31.721721, long: -71.51422},
+            { id: '432', lat: -31.723707, long: -71.513858},
+            { id: '433', lat: -31.725303, long: -71.512665},
+            { id: '434', lat: -31.729399, long: -71.509606},
+            { id: '435', lat: -31.732454, long: -71.507324},
+            { id: '436', lat: -31.735106, long: -71.505342},
+            { id: '437', lat: -31.739707, long: -71.501904},
+            { id: '438', lat: -31.742286, long: -71.499977},
+            { id: '439', lat: -31.747986, long: -71.495717},
+            { id: '440', lat: -31.750599, long: -71.493764},
+            { id: '441', lat: -31.754001, long: -71.491221},
+            { id: '442', lat: -31.758152, long: -71.488118},
+            { id: '443', lat: -31.760894, long: -71.486069},
+            { id: '444', lat: -31.765279, long: -71.485564},
+            { id: '445', lat: -31.768948, long: -71.485141},
+            { id: '446', lat: -31.774303, long: -71.484525},
+            { id: '447', lat: -31.778576, long: -71.484033},
+            { id: '448', lat: -31.783449, long: -71.483472},
+            { id: '449', lat: -31.787561, long: -71.482998},
+            { id: '450', lat: -31.791595, long: -71.482534},
+            { id: '451', lat: -31.796306, long: -71.481991},
+            { id: '452', lat: -31.800017, long: -71.481564},
+            { id: '453', lat: -31.804834, long: -71.481009},
+            { id: '454', lat: -31.812449, long: -71.480132},
+            { id: '455', lat: -31.813669, long: -71.479992},
+            { id: '456', lat: -31.81533, long: -71.4798},
+            { id: '457', lat: -31.819665, long: -71.479301},
+            { id: '458', lat: -31.82615, long: -71.478554},
+            { id: '459', lat: -31.829388, long: -71.478181},
+            { id: '460', lat: -31.834024, long: -71.477646},
+            { id: '461', lat: -31.837686, long: -71.477225},
+            { id: '462', lat: -31.840886, long: -71.475097},
+            { id: '463', lat: -31.84418, long: -71.472907},
+            { id: '464', lat: -31.845734, long: -71.471873},
+            { id: '465', lat: -31.849398, long: -71.469437},
+            { id: '466', lat: -31.85529, long: -71.465518},
+            { id: '467', lat: -31.85718, long: -71.464262},
+            { id: '468', lat: -31.861681, long: -71.461268},
+            { id: '469', lat: -31.865195, long: -71.458931},
+            { id: '470', lat: -31.867748, long: -71.457232},
+            { id: '471', lat: -31.872517, long: -71.454059},
+            { id: '472', lat: -31.8745, long: -71.45274},
+            { id: '473', lat: -31.877162, long: -71.450968},
+            { id: '474', lat: -31.881902, long: -71.447814},
+            { id: '475', lat: -31.885928, long: -71.445135},
+            { id: '476', lat: -31.887513, long: -71.44408},
+            { id: '477', lat: -31.892495, long: -71.445805},
+            { id: '478', lat: -31.894273, long: -71.446421},
+            { id: '479', lat: -31.899176, long: -71.446032},
+            { id: '480', lat: -31.902559, long: -71.449292},
+            { id: '481', lat: -31.9073, long: -71.450935},
+            { id: '482', lat: -31.91195, long: -71.452546},
+            { id: '483', lat: -31.916229, long: -71.454029},
+            { id: '484', lat: -31.921053, long: -71.455701},
+            { id: '485', lat: -31.929577, long: -71.458656},
+            { id: '486', lat: -31.930975, long: -71.459141},
+            { id: '487', lat: -31.933503, long: -71.460017},
+            { id: '488', lat: -31.935587, long: -71.46074},
+            { id: '489', lat: -31.943955, long: -71.463642},
+            { id: '490', lat: -31.948599, long: -71.465253},
+            { id: '491', lat: -31.951663, long: -71.465549},
+            { id: '492', lat: -31.954139, long: -71.465788},
+            { id: '493', lat: -31.959745, long: -71.46633},
+            { id: '494', lat: -31.965214, long: -71.466859},
+            { id: '495', lat: -31.969686, long: -71.467291},
+            { id: '496', lat: -31.973301, long: -71.467641},
+            { id: '497', lat: -31.978503, long: -71.468144},
+            { id: '498', lat: -31.983888, long: -71.468665},
+            { id: '499', lat: -31.985884, long: -71.468858},
+            { id: '500', lat: -31.989496, long: -71.469207},
+            { id: '501', lat: -31.992025, long: -71.469452},
+            { id: '502', lat: -31.995997, long: -71.469836},
+            { id: '503', lat: -31.998556, long: -71.470084},
+            { id: '504', lat: -32.00712, long: -71.470528},
+            { id: '505', lat: -32.009299, long: -71.470929},
+            { id: '506', lat: -32.011535, long: -71.47134},
+            { id: '507', lat: -32.013387, long: -71.471818},
+            { id: '508', lat: -32.017528, long: -71.472884},
+            { id: '509', lat: -32.021993, long: -71.474035},
+            { id: '510', lat: -32.024833, long: -71.474767},
+            { id: '511', lat: -32.02945, long: -71.4753},
+            { id: '512', lat: -32.032859, long: -71.475694},
+            { id: '513', lat: -32.035484, long: -71.475997},
+            { id: '514', lat: -32.038422, long: -71.476336},
+            { id: '515', lat: -32.042977, long: -71.476862},
+            { id: '516', lat: -32.046964, long: -71.477323},
+            { id: '517', lat: -32.051011, long: -71.47779},
+            { id: '518', lat: -32.055201, long: -71.478274},
+            { id: '519', lat: -32.058905, long: -71.478255},
+            { id: '520', lat: -32.064209, long: -71.478228},
+            { id: '521', lat: -32.068788, long: -71.478205},
+            { id: '522', lat: -32.072943, long: -71.478184},
+            { id: '523', lat: -32.077329, long: -71.478161},
+            { id: '524', lat: -32.081442, long: -71.47814},
+            { id: '525', lat: -32.086488, long: -71.478115},
+            { id: '526', lat: -32.090194, long: -71.478096},
+            { id: '527', lat: -32.09379, long: -71.477955},
+            { id: '528', lat: -32.093769, long: -71.477617},
+            { id: '529', lat: -32.097482, long: -71.477466},
+            { id: '530', lat: -32.101797, long: -71.477092},
+            { id: '531', lat: -32.105747, long: -71.47675},
+            { id: '532', lat: -32.110905, long: -71.476304},
+            { id: '533', lat: -32.114564, long: -71.475987},
+            { id: '534', lat: -32.120959, long: -71.475433},
+            { id: '535', lat: -32.12391, long: -71.475178},
+            { id: '536', lat: -32.127897, long: -71.474726},
+            { id: '537', lat: -32.132129, long: -71.474248},
+            { id: '538', lat: -32.135205, long: -71.473075},
+            { id: '539', lat: -32.139596, long: -71.471401},
+            { id: '540', lat: -32.144351, long: -71.469588},
+            { id: '541', lat: -32.148326, long: -71.468073},
+            { id: '542', lat: -32.153591, long: -71.466065},
+            { id: '543', lat: -32.157562, long: -71.464551},
+            { id: '544', lat: -32.160151, long: -71.463564},
+            { id: '545', lat: -32.163076, long: -71.46408},
+            { id: '546', lat: -32.167231, long: -71.464814},
+            { id: '547', lat: -32.172828, long: -71.465802},
+            { id: '548', lat: -32.178919, long: -71.465792},
+            { id: '549', lat: -32.183992, long: -71.465783},
+            { id: '550', lat: -32.187469, long: -71.465777},
+            { id: '551', lat: -32.191634, long: -71.465769},
+            { id: '552', lat: -32.195475, long: -71.465763},
+            { id: '553', lat: -32.198684, long: -71.465757},
+            { id: '554', lat: -32.20257, long: -71.46575},
+            { id: '555', lat: -32.207203, long: -71.465742},
+            { id: '556', lat: -32.210933, long: -71.465735},
+            { id: '557', lat: -32.216806, long: -71.465725},
+            { id: '558', lat: -32.220736, long: -71.465719},
+            { id: '559', lat: -32.226146, long: -71.465709},
+            { id: '560', lat: -32.230446, long: -71.465702},
+            { id: '561', lat: -32.235762, long: -71.465693},
+            { id: '562', lat: -32.238766, long: -71.465687},
+            { id: '563', lat: -32.242945, long: -71.463378},
+            { id: '564', lat: -32.247417, long: -71.460906},
+            { id: '565', lat: -32.250918, long: -71.458971},
+            { id: '566', lat: -32.254021, long: -71.457255},
+            { id: '567', lat: -32.257543, long: -71.455308},
+            { id: '568', lat: -32.261288, long: -71.453237},
+            { id: '569', lat: -32.266167, long: -71.450538},
+            { id: '570', lat: -32.269904, long: -71.448471},
+            { id: '571', lat: -32.275274, long: -71.445502},
+            { id: '572', lat: -32.279157, long: -71.443354},
+            { id: '573', lat: -32.283905, long: -71.440727},
+            { id: '574', lat: -32.287112, long: -71.438952},
+            { id: '575', lat: -32.291153, long: -71.436716},
+            { id: '576', lat: -32.294186, long: -71.435038},
+            { id: '577', lat: -32.300759, long: -71.4314},
+            { id: '578', lat: -32.3026, long: -71.430381},
+            { id: '579', lat: -32.304068, long: -71.428174},
+            { id: '580', lat: -32.306707, long: -71.424207},
+            { id: '581', lat: -32.308129, long: -71.42207},
+            { id: '582', lat: -32.309627, long: -71.419818},
+            { id: '583', lat: -32.313166, long: -71.414497},
+            { id: '584', lat: -32.31392, long: -71.41065},
+            { id: '585', lat: -32.314742, long: -71.406452},
+            { id: '586', lat: -32.315398, long: -71.4031},
+            { id: '587', lat: -32.317338, long: -71.401087},
+            { id: '588', lat: -32.320993, long: -71.397295},
+            { id: '589', lat: -32.324376, long: -71.393785},
+            { id: '590', lat: -32.328265, long: -71.389748},
+            { id: '591', lat: -32.332633, long: -71.385215},
+            { id: '592', lat: -32.335455, long: -71.380969},
+            { id: '593', lat: -32.33886, long: -71.375844},
+            { id: '594', lat: -32.340293, long: -71.373688},
+            { id: '595', lat: -32.343233, long: -71.370018},
+            { id: '596', lat: -32.346628, long: -71.36578},
+            { id: '597', lat: -32.350522, long: -71.360918},
+            { id: '598', lat: -32.351879, long: -71.359129},
+            { id: '599', lat: -32.356584, long: -71.353347},
+            { id: '600', lat: -32.361374, long: -71.348843},
+            { id: '601', lat: -32.363565, long: -71.346782},
+            { id: '602', lat: -32.365894, long: -71.344599},
+            { id: '603', lat: -32.367633, long: -71.342968},
+            { id: '604', lat: -32.371212, long: -71.343999},
+            { id: '605', lat: -32.374173, long: -71.344852},
+            { id: '606', lat: -32.378088, long: -71.34598},
+            { id: '607', lat: -32.382649, long: -71.347294},
+            { id: '608', lat: -32.385355, long: -71.348075},
+            { id: '609', lat: -32.389482, long: -71.349264},
+            { id: '610', lat: -32.393104, long: -71.350308},
+            { id: '611', lat: -32.397988, long: -71.352539},
+            { id: '612', lat: -32.40327, long: -71.354953},
+            { id: '613', lat: -32.406241, long: -71.356311},
+            { id: '614', lat: -32.408786, long: -71.356837},
+            { id: '615', lat: -32.413572, long: -71.357826},
+            { id: '616', lat: -32.417302, long: -71.358597},
+            { id: '617', lat: -32.422343, long: -71.359639},
+            { id: '618', lat: -32.425596, long: -71.360312},
+            { id: '619', lat: -32.429022, long: -71.36102},
+            { id: '620', lat: -32.432069, long: -71.36165},
+            { id: '621', lat: -32.437736, long: -71.362822},
+            { id: '622', lat: -32.439735, long: -71.363236},
+            { id: '623', lat: -32.44219, long: -71.361927},
+            { id: '624', lat: -32.445676, long: -71.360069},
+            { id: '625', lat: -32.449961, long: -71.357784},
+            { id: '626', lat: -32.454937, long: -71.355131},
+            { id: '627', lat: -32.458818, long: -71.35306},
+            { id: '628', lat: -32.461438, long: -71.351663},
+            { id: '629', lat: -32.464296, long: -71.350747},
+            { id: '630', lat: -32.467354, long: -71.349765},
+            { id: '631', lat: -32.472005, long: -71.348273},
+            { id: '632', lat: -32.474804, long: -71.347375},
+            { id: '633', lat: -32.477603, long: -71.346478},
+            { id: '634', lat: -32.47971, long: -71.347707},
+            { id: '635', lat: -32.482739, long: -71.349475},
+            { id: '636', lat: -32.485367, long: -71.351009},
+            { id: '637', lat: -32.488414, long: -71.352788},
+            { id: '638', lat: -32.490674, long: -71.354107},
+            { id: '639', lat: -32.494826, long: -71.354454},
+            { id: '640', lat: -32.498768, long: -71.354784},
+            { id: '641', lat: -32.502861, long: -71.355126},
+            { id: '642', lat: -32.506687, long: -71.355446},
+            { id: '643', lat: -32.51256, long: -71.35524},
+            { id: '644', lat: -32.517168, long: -71.355078},
+            { id: '645', lat: -32.521641, long: -71.354922},
+            { id: '646', lat: -32.524125, long: -71.354834},
+            { id: '647', lat: -32.528689, long: -71.354674},
+            { id: '648', lat: -32.533371, long: -71.354509},
+            { id: '649', lat: -32.53743, long: -71.354367},
+            { id: '650', lat: -32.541921, long: -71.35421},
+            { id: '651', lat: -32.545721, long: -71.354076},
+            { id: '652', lat: -32.55088, long: -71.353895},
+            { id: '653', lat: -32.554309, long: -71.353774},
+            { id: '654', lat: -32.557666, long: -71.356483},
+            { id: '655', lat: -32.560591, long: -71.358844},
+            { id: '656', lat: -32.565359, long: -71.362693},
+            { id: '657', lat: -32.566878, long: -71.363919},
+            { id: '658', lat: -32.571365, long: -71.365875},
+            { id: '659', lat: -32.573355, long: -71.366743},
+            { id: '660', lat: -32.57706, long: -71.369072},
+            { id: '661', lat: -32.580278, long: -71.36831},
+            { id: '662', lat: -32.581855, long: -71.365987},
+            { id: '663', lat: -32.585283, long: -71.365662},
+            { id: '664', lat: -32.58857, long: -71.364693},
+            { id: '665', lat: -32.591618, long: -71.367596},
+            { id: '666', lat: -32.593772, long: -71.36967},
+            { id: '667', lat: -32.596404, long: -71.371536},
+            { id: '668', lat: -32.599562, long: -71.373846},
+            { id: '669', lat: -32.602946, long: -71.373885},
+            { id: '670', lat: -32.608408, long: -71.37572},
+            { id: '671', lat: -32.61175, long: -71.374921},
+            { id: '672', lat: -32.615356, long: -71.374059},
+            { id: '673', lat: -32.619033, long: -71.371225},
+            { id: '674', lat: -32.620312, long: -71.37003},
+            { id: '675', lat: -32.62047, long: -71.370315},
+            { id: '676', lat: -32.6234, long: -71.367857},
+            { id: '677', lat: -32.627038, long: -71.3653},
+            { id: '678', lat: -32.62853, long: -71.36419},
+            { id: '679', lat: -32.630752, long: -71.362535},
+            { id: '680', lat: -32.633275, long: -71.360636},
+            { id: '681', lat: -32.638471, long: -71.360059},
+            { id: '682', lat: -32.645296, long: -71.367342},
+            { id: '683', lat: -32.65311, long: -71.368068},
+            { id: '684', lat: -32.659321, long: -71.368645},
+            { id: '685', lat: -32.664445, long: -71.370767},
+            { id: '686', lat: -32.668295, long: -71.372362},
+            { id: '687', lat: -32.671386, long: -71.373643},
+            { id: '688', lat: -32.675582, long: -71.375381},
+            { id: '689', lat: -32.680958, long: -71.377609},
+            { id: '690', lat: -32.688824, long: -71.377881},
+            { id: '691', lat: -32.689852, long: -71.377917},
+            { id: '692', lat: -32.697213, long: -71.378173},
+            { id: '693', lat: -32.699647, long: -71.378257},
+            { id: '694', lat: -32.705777, long: -71.37847},
+            { id: '695', lat: -32.709166, long: -71.378587},
+            { id: '696', lat: -32.714785, long: -71.378782},
+            { id: '697', lat: -32.719959, long: -71.382035},
+            { id: '698', lat: -32.724323, long: -71.384779},
+            { id: '699', lat: -32.728196, long: -71.387215},
+            { id: '700', lat: -32.731118, long: -71.389866},
+            { id: '701', lat: -32.735911, long: -71.394215},
+            { id: '702', lat: -32.738296, long: -71.39638},
+            { id: '703', lat: -32.74036, long: -71.398252},
+            { id: '704', lat: -32.742701, long: -71.397424},
+            { id: '705', lat: -32.745291, long: -71.396506},
+            { id: '706', lat: -32.748456, long: -71.395385},
+            { id: '707', lat: -32.752435, long: -71.396534},
+            { id: '708', lat: -32.75621, long: -71.397623},
+            { id: '709', lat: -32.758261, long: -71.399472},
+            { id: '710', lat: -32.761487, long: -71.402383},
+            { id: '711', lat: -32.766804, long: -71.403367},
+            { id: '712', lat: -32.771691, long: -71.404272},
+            { id: '713', lat: -32.776895, long: -71.40523},
+            { id: '714', lat: -32.781101, long: -71.403631},
+            { id: '715', lat: -32.786028, long: -71.401758},
+            { id: '716', lat: -32.791093, long: -71.399833},
+            { id: '717', lat: -32.794937, long: -71.398371},
+            { id: '718', lat: -32.798898, long: -71.396865},
+            { id: '719', lat: -32.802937, long: -71.397112},
+            { id: '720', lat: -32.808123, long: -71.397428},
+            { id: '721', lat: -32.813308, long: -71.397744},
+            { id: '722', lat: -32.81877, long: -71.398077},
+            { id: '723', lat: -32.821757, long: -71.398259},
+            { id: '724', lat: -32.82582, long: -71.398779},
+            { id: '725', lat: -32.828761, long: -71.399156},
+            { id: '726', lat: -32.835762, long: -71.400053},
+            { id: '727', lat: -32.837855, long: -71.400321},
+            { id: '728', lat: -32.842566, long: -71.400925},
+            { id: '729', lat: -32.850273, long: -71.401913},
+            { id: '730', lat: -32.851758, long: -71.402104},
+            { id: '731', lat: -32.861995, long: -71.403416},
+            { id: '732', lat: -32.863963, long: -71.403669},
+            { id: '733', lat: -32.86758, long: -71.403317},
+            { id: '734', lat: -32.869482, long: -71.403132},
+            { id: '735', lat: -32.87477, long: -71.402619},
+            { id: '736', lat: -32.878641, long: -71.402243},
+            { id: '737', lat: -32.883058, long: -71.401813},
+            { id: '738', lat: -32.886845, long: -71.401445},
+            { id: '739', lat: -32.890706, long: -71.40107},
+            { id: '740', lat: -32.895632, long: -71.400591},
+            { id: '741', lat: -32.900278, long: -71.400139},
+            { id: '742', lat: -32.903997, long: -71.399778},
+            { id: '743', lat: -32.908819, long: -71.399309},
+            { id: '744', lat: -32.912633, long: -71.398938},
+            { id: '745', lat: -32.916881, long: -71.398525},
+            { id: '746', lat: -32.92263, long: -71.397966},
+            { id: '747', lat: -32.92491, long: -71.393805},
+            { id: '748', lat: -32.926751, long: -71.390444},
+            { id: '749', lat: -32.928916, long: -71.390081},
+            { id: '750', lat: -32.9316, long: -71.389632},
+            { id: '751', lat: -32.934911, long: -71.389077},
+            { id: '752', lat: -32.937997, long: -71.387015},
+            { id: '753', lat: -32.940787, long: -71.385152},
+            { id: '754', lat: -32.943665, long: -71.38323},
+            { id: '755', lat: -32.945488, long: -71.382012},
+            { id: '756', lat: -32.948377, long: -71.380082},
+            { id: '757', lat: -32.952341, long: -71.376256},
+            { id: '758', lat: -32.955427, long: -71.373278},
+            { id: '759', lat: -32.958702, long: -71.370116},
+            { id: '760', lat: -32.960798, long: -71.36774},
+            { id: '761', lat: -32.963196, long: -71.365021},
+            { id: '762', lat: -32.965712, long: -71.362169},
+            { id: '763', lat: -32.969351, long: -71.358044},
+            { id: '764', lat: -32.971235, long: -71.354971},
+            { id: '765', lat: -32.974185, long: -71.350159},
+            { id: '766', lat: -32.976862, long: -71.345791},
+            { id: '767', lat: -32.977933, long: -71.344044},
+            { id: '768', lat: -32.981495, long: -71.342221},
+            { id: '769', lat: -32.985084, long: -71.340421},
+            { id: '770', lat: -32.99008, long: -71.337914},
+            { id: '771', lat: -32.994411, long: -71.335741},
+            { id: '772', lat: -32.998977, long: -71.33345},
+            { id: '773', lat: -33.002552, long: -71.332401},
+            { id: '774', lat: -33.006679, long: -71.33119},
+            { id: '775', lat: -33.012189, long: -71.329573},
+            { id: '776', lat: -33.01579, long: -71.328516},
+            { id: '777', lat: -33.01861, long: -71.327689},
+            { id: '778', lat: -33.020687, long: -71.324903},
+            { id: '779', lat: -33.022029, long: -71.323103},
+            { id: '780', lat: -33.022801, long: -71.316845},
+            { id: '781', lat: -33.023395, long: -71.311865},
+            { id: '782', lat: -33.024192, long: -71.3053},
+            { id: '783', lat: -33.025833, long: -71.299812},
+            { id: '784', lat: -33.02696, long: -71.29604},
+            { id: '785', lat: -33.027637, long: -71.293776},
+            { id: '786', lat: -33.030449, long: -71.290228},
+            { id: '787', lat: -33.03317, long: -71.286722},
+            { id: '788', lat: -33.036861, long: -71.281967},
+            { id: '789', lat: -33.041878, long: -71.27653},
+            { id: '790', lat: -33.045023, long: -71.273122},
+            { id: '791', lat: -33.04983, long: -71.267912},
+            { id: '792', lat: -33.053278, long: -71.265561},
+            { id: '793', lat: -33.056018, long: -71.263693},
+            { id: '794', lat: -33.058693, long: -71.261868},
+            { id: '795', lat: -33.062202, long: -71.254704},
+            { id: '796', lat: -33.064102, long: -71.250824},
+            { id: '797', lat: -33.066009, long: -71.246928},
+            { id: '798', lat: -33.070252, long: -71.238262},
+            { id: '799', lat: -33.071801, long: -71.235098},
+            { id: '800', lat: -33.073999, long: -71.232167},
+            { id: '801', lat: -33.075135, long: -71.230651},
+            { id: '802', lat: -33.078662, long: -71.225946},
+            { id: '803', lat: -33.079401, long: -71.221276},
+            { id: '804', lat: -33.081517, long: -71.20789},
+            { id: '805', lat: -33.079152, long: -71.203069},
+            { id: '806', lat: -33.078404, long: -71.19921},
+            { id: '807', lat: -33.077239, long: -71.193201},
+            { id: '808', lat: -33.075204, long: -71.181093},
+            { id: '809', lat: -33.075705, long: -71.177194},
+            { id: '810', lat: -33.076739, long: -71.176293},
+            { id: '811', lat: -33.078258, long: -71.174969},
+            { id: '812', lat: -33.080906, long: -71.17266},
+            { id: '813', lat: -33.085617, long: -71.168552},
+            { id: '814', lat: -33.087732, long: -71.166708},
+            { id: '815', lat: -33.094495, long: -71.16081},
+            { id: '816', lat: -33.096831, long: -71.158772},
+            { id: '817', lat: -33.102209, long: -71.154081},
+            { id: '818', lat: -33.104384, long: -71.152183},
+            { id: '819', lat: -33.10631, long: -71.150232},
+            { id: '820', lat: -33.108196, long: -71.148323},
+            { id: '821', lat: -33.115667, long: -71.141415},
+            { id: '822', lat: -33.118576, long: -71.138725},
+            { id: '823', lat: -33.121148, long: -71.136129},
+            { id: '824', lat: -33.121326, long: -71.136398},
+            { id: '825', lat: -33.122188, long: -71.135384},
+            { id: '826', lat: -33.121967, long: -71.133202},
+            { id: '827', lat: -33.121667, long: -71.130239},
+            { id: '828', lat: -33.120939, long: -71.123054},
+            { id: '829', lat: -33.119632, long: -71.110913},
+            { id: '830', lat: -33.119492, long: -71.109608},
+            { id: '831', lat: -33.113865, long: -71.099933},
+            { id: '832', lat: -33.112181, long: -71.097038},
+            { id: '833', lat: -33.108697, long: -71.090751},
+            { id: '834', lat: -33.105742, long: -71.08599},
+            { id: '835', lat: -33.103938, long: -71.083085},
+            { id: '836', lat: -33.100203, long: -71.076707},
+            { id: '837', lat: -33.097346, long: -71.068911},
+            { id: '838', lat: -33.096461, long: -71.068304},
+            { id: '839', lat: -33.09295, long: -71.066119},
+            { id: '840', lat: -33.089462, long: -71.06395},
+            { id: '841', lat: -33.088305, long: -71.062772},
+            { id: '842', lat: -33.081757, long: -71.056228},
+            { id: '843', lat: -33.077117, long: -71.051099},
+            { id: '844', lat: -33.073444, long: -71.046117},
+            { id: '845', lat: -33.071462, long: -71.038721},
+            { id: '846', lat: -33.069989, long: -71.031409},
+            { id: '847', lat: -33.070362, long: -71.028983},
+            { id: '848', lat: -33.070868, long: -71.025698},
+            { id: '849', lat: -33.071648, long: -71.020634},
+            { id: '850', lat: -33.072062, long: -71.01797},
+            { id: '851', lat: -33.072572, long: -71.014795},
+            { id: '852', lat: -33.072959, long: -71.012388},
+            { id: '853', lat: -33.073706, long: -71.007742},
+            { id: '854', lat: -33.074442, long: -71.003166},
+            { id: '855', lat: -33.075687, long: -70.995409},
+            { id: '856', lat: -33.076023, long: -70.99332},
+            { id: '857', lat: -33.077325, long: -70.985209},
+            { id: '858', lat: -33.078999, long: -70.97478},
+            { id: '859', lat: -33.079762, long: -70.970675},
+            { id: '860', lat: -33.080578, long: -70.966288},
+            { id: '861', lat: -33.081847, long: -70.959461},
+            { id: '862', lat: -33.082782, long: -70.958603},
+            { id: '863', lat: -33.090841, long: -70.9512},
+            { id: '864', lat: -33.097825, long: -70.94791},
+            { id: '865', lat: -33.099593, long: -70.947076},
+            { id: '866', lat: -33.104689, long: -70.944675},
+            { id: '867', lat: -33.10914, long: -70.942577},
+            { id: '868', lat: -33.111982, long: -70.941238},
+            { id: '869', lat: -33.114802, long: -70.940418},
+            { id: '870', lat: -33.11905, long: -70.939183},
+            { id: '871', lat: -33.122937, long: -70.938053},
+            { id: '872', lat: -33.126477, long: -70.937023},
+            { id: '873', lat: -33.129362, long: -70.935508},
+            { id: '874', lat: -33.132569, long: -70.933824},
+            { id: '875', lat: -33.1347, long: -70.932421},
+            { id: '876', lat: -33.13806, long: -70.93021},
+            { id: '877', lat: -33.141906, long: -70.927679},
+            { id: '878', lat: -33.144494, long: -70.925976},
+            { id: '879', lat: -33.150807, long: -70.92182},
+            { id: '880', lat: -33.155832, long: -70.918512},
+            { id: '881', lat: -33.158743, long: -70.916595},
+            { id: '882', lat: -33.163119, long: -70.910511},
+            { id: '883', lat: -33.164791, long: -70.908187},
+            { id: '884', lat: -33.167246, long: -70.904773},
+            { id: '885', lat: -33.169988, long: -70.90245},
+            { id: '886', lat: -33.172722, long: -70.900133},
+            { id: '887', lat: -33.176078, long: -70.895895},
+            { id: '888', lat: -33.177378, long: -70.89077},
+            { id: '889', lat: -33.18, long: -70.887209},
+            { id: '890', lat: -33.183357, long: -70.88265},
+            { id: '891', lat: -33.185817, long: -70.879309},
+            { id: '892', lat: -33.189484, long: -70.874327},
+            { id: '893', lat: -33.192558, long: -70.870151},
+            { id: '894', lat: -33.194806, long: -70.869034},
+            { id: '895', lat: -33.196631, long: -70.868127},
+            { id: '896', lat: -33.198631, long: -70.86483},
+            { id: '897', lat: -33.198605, long: -70.863295},
+            { id: 'POL', lat: -33.198215, long: -70.862841}
+        ];
+
+        
+        const WEATHER_VARIABLES={temperature_2m:{label:"Temperatura",unit:"°C",color:"#FF6B6B",type:"column"},rain:{label:"Lluvia",unit:"mm",color:"#4ECDC4",type:"column"},snowfall:{label:"Nieve",unit:"cm",color:"#A8E6CF",type:"column"},windspeed_10m:{label:"Velocidad del Viento",unit:"km/h",color:"#FFD93D",type:"column"},windgusts_10m:{label:"Ráfagas de Viento",unit:"km/h",color:"#FF8B94",type:"column"},relativehumidity_2m:{label:"Humedad Relativa",unit:"%",color:"#6BCF7F",type:"column"},surface_pressure:{label:"Presión Atmosférica",unit:"hPa",color:"#4D96FF",type:"column"},dewpoint_2m:{label:"Punto de Rocío",unit:"°C",color:"#9B59B6",type:"column"}};let chartInstances=[];let analysisData={};function calculateCorrelation(x,y){const validPairs=[];for(let i=0;i<Math.min(x.length,y.length);i++){if(x[i]!==null&&y[i]!==null&&!isNaN(x[i])&&!isNaN(y[i])){validPairs.push([x[i],y[i]])}}
+if(validPairs.length<2)return 0;const xValues=validPairs.map(pair=>pair[0]);const yValues=validPairs.map(pair=>pair[1]);const n=validPairs.length;const sumX=xValues.reduce((sum,val)=>sum+val,0);const sumY=yValues.reduce((sum,val)=>sum+val,0);const sumXY=validPairs.reduce((sum,pair)=>sum+(pair[0]*pair[1]),0);const sumX2=xValues.reduce((sum,val)=>sum+(val*val),0);const sumY2=yValues.reduce((sum,val)=>sum+(val*val),0);const numerator=(n*sumXY)-(sumX*sumY);const denominator=Math.sqrt(((n*sumX2)-(sumX*sumX))*((n*sumY2)-(sumY*sumY)));if(denominator===0)return 0;return numerator/denominator}
+function createCorrelationMatrix(weatherData){const variables=[{key:'temperature_2m',label:'Temperatura'},{key:'relativehumidity_2m',label:'Humedad'},{key:'surface_pressure',label:'Presión'},{key:'windspeed_10m',label:'Viento'},{key:'windgusts_10m',label:'Ráfagas'},{key:'dewpoint_2m',label:'Pto. Rocío'},{key:'rain',label:'Lluvia'}];const correlationMatrix=[];variables.forEach((varX,i)=>{variables.forEach((varY,j)=>{const correlation=calculateCorrelation(weatherData[varX.key]||[],weatherData[varY.key]||[]);correlationMatrix.push({x:varX.label,y:varY.label,correlation:correlation})})});return{matrix:correlationMatrix,variables}}
+function createCorrelationChart(weatherData){const{matrix,variables}=createCorrelationMatrix(weatherData);const series=variables.map(varY=>({name:varY.label,data:variables.map(varX=>{const correlation=matrix.find(m=>m.x===varX.label&&m.y===varY.label)?.correlation||0;return{x:varX.label,y:correlation}})}));const options={series:series,chart:{height:500,type:'heatmap',toolbar:{show:!0}},dataLabels:{enabled:!0,formatter:function(val){return val.toFixed(2)},style:{fontSize:'12px',fontWeight:600}},colors:['#FF6B6B'],colorScale:{ranges:[{from:-1,to:-0.7,color:'#4299E1',name:'Fuerte Negativa'},{from:-0.7,to:-0.3,color:'#63B3ED',name:'Moderada Negativa'},{from:-0.3,to:0.3,color:'#F7FAFC',name:'Débil'},{from:0.3,to:0.7,color:'#FBD38D',name:'Moderada Positiva'},{from:0.7,to:1,color:'#F56565',name:'Fuerte Positiva'}]},title:{text:'Coeficientes de Correlación de Pearson',align:'center',style:{fontSize:'16px',fontWeight:600}},xaxis:{title:{text:'Variables Meteorológicas'},labels:{rotate:-45}},yaxis:{title:{text:'Variables Meteorológicas'}},tooltip:{custom:function({series,seriesIndex,dataPointIndex,w}){const xVar=w.globals.labels[dataPointIndex];const yVar=w.config.series[seriesIndex].name;const correlation=series[seriesIndex][dataPointIndex];let strength='';let interpretation='';if(Math.abs(correlation)>=0.7){strength='Fuerte';interpretation='Las variables están muy relacionadas'}else if(Math.abs(correlation)>=0.3){strength='Moderada';interpretation='Las variables tienen relación significativa'}else{strength='Débil';interpretation='Las variables tienen poca relación'}
+const direction=correlation>0?'Positiva':'Negativa';return `
+                    <div style="padding: 12px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                        <div style="font-weight: 600; margin-bottom: 8px;">${yVar} vs ${xVar}</div>
+                        <div style="margin-bottom: 4px;"><strong>Correlación:</strong> ${correlation.toFixed(3)}</div>
+                        <div style="margin-bottom: 4px;"><strong>Fuerza:</strong> ${strength} ${direction}</div>
+                        <div style="font-size: 12px; color: #666;">${interpretation}</div>
+                    </div>
+                `}},legend:{show:!1}};const chart=new ApexCharts(document.querySelector('#correlationChart'),options);chart.render();chartInstances.push(chart);generateCorrelationInsights(matrix)}
+function toggleAlertInfo(){const alertInfo=document.getElementById('alertInfo');if(alertInfo.style.display==='none'||alertInfo.style.display===''){alertInfo.style.display='block'}else{alertInfo.style.display='none'}}
+function generateCorrelationInsights(matrix){const insights=[];const significantCorrelations=matrix.filter(m=>m.x!==m.y).sort((a,b)=>Math.abs(b.correlation)-Math.abs(a.correlation)).slice(0,8);significantCorrelations.forEach(corr=>{let category='';let interpretation='';if(Math.abs(corr.correlation)>=0.7){category='strong';interpretation='Relación muy fuerte que indica dependencia directa'}else if(Math.abs(corr.correlation)>=0.4){category='moderate';interpretation='Relación significativa que sugiere influencia mutua'}else if(Math.abs(corr.correlation)>=0.2){category='weak';interpretation='Relación débil pero detectable'}
+if(category){const direction=corr.correlation>0?'positiva':'negativa';insights.push({title:`${corr.x} ↔ ${corr.y}`,value:`r = ${corr.correlation.toFixed(3)} (${direction})`,description:interpretation,category:category})}});const container=document.getElementById('correlationInsights');container.innerHTML='';if(insights.length===0){container.innerHTML='<div class="no-alerts">No se encontraron correlaciones significativas</div>';return}
+insights.forEach(insight=>{const insightElement=document.createElement('div');insightElement.className=`insight-item insight-${insight.category}`;insightElement.innerHTML=`
+            <div class="insight-title">${insight.title}</div>
+            <div class="insight-value">${insight.value}</div>
+            <div class="insight-description">${insight.description}</div>
+        `;container.appendChild(insightElement)})}
+function switchTab(tabName){document.querySelectorAll('.tab-btn').forEach(btn=>{btn.classList.remove('active')});document.querySelectorAll('.tab-panel').forEach(panel=>{panel.classList.remove('active')});document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');document.getElementById(`${tabName}Tab`).classList.add('active')}
+function calculateStats(data){const validData=data.filter(d=>d!==null&&d!==undefined&&!isNaN(d));if(validData.length===0)return null;const sorted=[...validData].sort((a,b)=>a-b);const min=Math.min(...validData);const max=Math.max(...validData);const avg=validData.reduce((sum,val)=>sum+val,0)/validData.length;const q1Index=Math.floor(sorted.length*0.25);const q3Index=Math.floor(sorted.length*0.75);const median=sorted.length%2===0?(sorted[Math.floor(sorted.length/2)-1]+sorted[Math.floor(sorted.length/2)])/2:sorted[Math.floor(sorted.length/2)];const variance=validData.reduce((sum,val)=>sum+Math.pow(val-avg,2),0)/validData.length;const stdDev=Math.sqrt(variance);return{min,max,avg,median,stdDev,q1:sorted[q1Index],q3:sorted[q3Index]}}
+function analyzeAlerts(weatherData){const alerts=[];const temps=weatherData.temperature_2m.filter(t=>t!==null);const maxTemp=Math.max(...temps);const minTemp=Math.min(...temps);if(maxTemp>30){alerts.push({level:'high',icon:'🔥',message:`Temperatura alta: ${maxTemp.toFixed(1)}°C`})}
+if(minTemp<0){alerts.push({level:'high',icon:'❄️',message:`Riesgo de helada: ${minTemp.toFixed(1)}°C`})}
+const winds=weatherData.windgusts_10m.filter(w=>w!==null);const maxWind=Math.max(...winds);if(maxWind>50){alerts.push({level:'high',icon:'💨',message:`Vientos peligrosos: ${maxWind.toFixed(1)} km/h`})}else if(maxWind>30){alerts.push({level:'medium',icon:'🌬️',message:`Vientos moderados: ${maxWind.toFixed(1)} km/h`})}
+const rains=weatherData.rain.filter(r=>r!==null&&r>0);const maxRain=rains.length>0?Math.max(...rains):0;if(maxRain>10){alerts.push({level:'medium',icon:'🌧️',message:`Lluvia intensa: ${maxRain.toFixed(1)} mm/h`})}
+const pressures=weatherData.surface_pressure.filter(p=>p!==null);if(pressures.length>1){const pressureChange=Math.abs(Math.max(...pressures)-Math.min(...pressures));if(pressureChange>10){alerts.push({level:'medium',icon:'⚡',message:`Cambio brusco de presión: ${pressureChange.toFixed(1)} hPa`})}}
+const humidity=weatherData.relativehumidity_2m.filter(h=>h!==null);const avgHumidity=humidity.reduce((sum,h)=>sum+h,0)/humidity.length;if(avgHumidity>90){alerts.push({level:'low',icon:'💧',message:`Humedad alta promedio: ${avgHumidity.toFixed(1)}%`})}
+return alerts}
+function analyzePatterns(weatherData){const patterns=[];const temps=weatherData.temperature_2m.filter(t=>t!==null);const tempTrend=temps[temps.length-1]-temps[0];patterns.push({title:'Tendencia de Temperatura (48h)',value:tempTrend>0?`Ascendente +${tempTrend.toFixed(1)}°C`:`Descendente ${tempTrend.toFixed(1)}°C`});const totalRain=weatherData.rain.filter(r=>r!==null).reduce((sum,r)=>sum+r,0);const totalSnow=weatherData.snowfall.filter(s=>s!==null).reduce((sum,s)=>sum+s,0);patterns.push({title:'Precipitación Acumulada',value:`Lluvia: ${totalRain.toFixed(1)}mm | Nieve: ${totalSnow.toFixed(1)}cm`});const winds=weatherData.windspeed_10m.filter(w=>w!==null);const windRange=Math.max(...winds)-Math.min(...winds);patterns.push({title:'Variabilidad del Viento',value:`Rango: ${windRange.toFixed(1)} km/h (${Math.min(...winds).toFixed(1)} - ${Math.max(...winds).toFixed(1)})`});const pressures=weatherData.surface_pressure.filter(p=>p!==null);const pressureStdDev=calculateStats(pressures)?.stdDev||0;patterns.push({title:'Estabilidad Atmosférica',value:pressureStdDev<2?'Estable':pressureStdDev<5?'Moderadamente variable':'Muy variable'});return patterns}
+function createStatsPanel(weatherData){const statsContainer=document.getElementById('statsPanel');statsContainer.innerHTML='';const variables=[{key:'temperature_2m',label:'Temperatura',unit:'°C'},{key:'relativehumidity_2m',label:'Humedad',unit:'%'},{key:'windspeed_10m',label:'Viento',unit:'km/h'},{key:'surface_pressure',label:'Presión',unit:'hPa'}];variables.forEach(variable=>{const stats=calculateStats(weatherData[variable.key]);if(stats){const statCard=document.createElement('div');statCard.className='stat-card';statCard.innerHTML=`
+                <div class="stat-value">${stats.avg.toFixed(1)}<span class="stat-unit">${variable.unit}</span></div>
+                <div class="stat-label">${variable.label} Promedio</div>
+                <div style="font-size: 0.75rem; color: #a0aec0; margin-top: 0.5rem;">
+                    Min: ${stats.min.toFixed(1)} | Max: ${stats.max.toFixed(1)}
+                </div>
+            `;statsContainer.appendChild(statCard)}})}
+function createAlertsPanel(alerts){const alertsList=document.getElementById('alertsList');alertsList.innerHTML='';if(alerts.length===0){alertsList.innerHTML='<div class="no-alerts">✅ No hay alertas meteorológicas</div>';return}
+alerts.forEach(alert=>{const alertItem=document.createElement('div');alertItem.className=`alert-item alert-${alert.level}`;alertItem.innerHTML=`
+            <span class="alert-icon">${alert.icon}</span>
+            <span>${alert.message}</span>
+        `;alertsList.appendChild(alertItem)})}
+function createPatternsPanel(patterns){const patternsList=document.getElementById('patternsList');patternsList.innerHTML='';patterns.forEach(pattern=>{const patternItem=document.createElement('div');patternItem.className='pattern-item';patternItem.innerHTML=`
+            <div class="pattern-title">${pattern.title}</div>
+            <div class="pattern-value">${pattern.value}</div>
+        `;patternsList.appendChild(patternItem)})}
+function createExecutiveSummary(weatherData,alerts,dateRange,coordinates){const summaryContainer=document.getElementById('executiveSummary');const tempStats=calculateStats(weatherData.temperature_2m);const totalRain=weatherData.rain.filter(r=>r!==null).reduce((sum,r)=>sum+r,0);const maxWind=Math.max(...weatherData.windgusts_10m.filter(w=>w!==null));const alertLevel=alerts.some(a=>a.level==='high')?'ALTO':alerts.some(a=>a.level==='medium')?'MEDIO':'BAJO';summaryContainer.innerHTML=`
+        <div class="summary-title">📋 Resumen Ejecutivo</div>
+        <div class="summary-subtitle">
+            Desde las 00:00 horas del ${dateRange.start} hasta las 23:59 horas del ${dateRange.end} en la coordenada [${coordinates.lat}, ${coordinates.long}]
+        </div>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="summary-value">${tempStats?.avg.toFixed(1) || 'N/A'}°C</div>
+                <div class="summary-label">Temp. Promedio</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">${totalRain.toFixed(1)}mm</div>
+                <div class="summary-label">Lluvia Total</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">${maxWind.toFixed(0)} km/h</div>
+                <div class="summary-label">Viento Máximo</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">${alertLevel}</div>
+                <div class="summary-label">Nivel de Riesgo</div>
+            </div>
+        </div>
+    `}
+function createCombinedChart(weatherData,timestamps){const formattedTimestamps=timestamps.map(formatDateTime);const tempData=weatherData.temperature_2m.map((value,index)=>({x:formattedTimestamps[index],y:value}));const humidityData=weatherData.relativehumidity_2m.map((value,index)=>({x:formattedTimestamps[index],y:value}));const pressureData=weatherData.surface_pressure.map((value,index)=>({x:formattedTimestamps[index],y:value}));const options={series:[{name:'Temperatura (°C)',type:'line',data:tempData,yAxisIndex:0},{name:'Humedad (%)',type:'line',data:humidityData,yAxisIndex:1},{name:'Presión (hPa)',type:'line',data:pressureData,yAxisIndex:2}],chart:{height:400,type:'line',toolbar:{show:!0}},colors:['#FF6B6B','#6BCF7F','#4D96FF'],stroke:{width:[3,2,2],curve:'smooth'},xaxis:{type:'category',labels:{rotate:-45,style:{fontSize:'10px'}}},yaxis:[{title:{text:'Temperatura (°C)',style:{color:'#FF6B6B'}},labels:{style:{colors:'#FF6B6B'}}},{opposite:!0,title:{text:'Humedad (%)',style:{color:'#6BCF7F'}},labels:{style:{colors:'#6BCF7F'}}},{opposite:!0,title:{text:'Presión (hPa)',style:{color:'#4D96FF'}},labels:{style:{colors:'#4D96FF'}}}],tooltip:{shared:!0,intersect:!1},legend:{position:'top'}};const chart=new ApexCharts(document.querySelector('#combinedChart'),options);chart.render();chartInstances.push(chart)}
+function createChart(containerId,variableKey,data,timestamps){const config=WEATHER_VARIABLES[variableKey];const chartContainer=document.createElement("div");chartContainer.className="chart-card";chartContainer.innerHTML=`
+        <div class="chart-title">${config.label} (${config.unit})</div>
+        <div id="chart-${variableKey}" style="height: 350px;"></div>
+    `;document.getElementById(containerId).appendChild(chartContainer);const formattedTimestamps=timestamps.map(formatDateTime);const chartData=data.map((value,index)=>({x:formattedTimestamps[index],y:value!==null?Number(value):0}));const options={series:[{name:config.label,data:chartData}],chart:{type:'bar',height:350,toolbar:{show:!0,tools:{download:!0,zoom:!0,zoomin:!0,zoomout:!0,pan:!0,reset:!0}},animations:{enabled:!0,easing:'easeinout',speed:600}},colors:[config.color],plotOptions:{bar:{columnWidth:'70%',borderRadius:2,distributed:!1}},dataLabels:{enabled:!1},xaxis:{type:'category',title:{text:'Fecha y Hora',style:{fontSize:'12px',fontWeight:600,color:'#333'}},labels:{rotate:-45,style:{fontSize:'10px',colors:'#666'},maxHeight:60}},yaxis:{title:{text:config.unit,style:{fontSize:'12px',fontWeight:600,color:'#333'}},labels:{style:{fontSize:'11px',colors:'#666'},formatter:function(value){return value!==null?value.toFixed(1):'0'}}},tooltip:{theme:'light',y:{formatter:function(value){return `${value !== null ? value.toFixed(2) : '0'} ${config.unit}`}}},grid:{borderColor:'#e7e7e7',strokeDashArray:3,row:{colors:['#f8f9fa','transparent'],opacity:0.5}},theme:{mode:'light'},responsive:[{breakpoint:768,options:{chart:{height:280},xaxis:{labels:{rotate:-90,style:{fontSize:'9px'}}}}}]};try{const chart=new ApexCharts(document.querySelector(`#chart-${variableKey}`),options);chart.render();chartInstances.push(chart)}catch(error){console.error(`Error creating chart for ${variableKey}:`,error)}}
+function populateLocationSelect(){const select=document.getElementById("locationSelect");coordinates.forEach(coord=>{const option=document.createElement("option");option.value=coord.id;option.textContent=`Punto ${coord.id}`;select.appendChild(option)})}
+function handleLocationChange(){const selected=document.getElementById("locationSelect").value}
+function calculateDateRange(endDateStr){const end=new Date(endDateStr);end.setHours(23,59,59);const start=new Date(end.getTime()-47*60*60*1000);return{start:start.toISOString().split("T")[0],end:end.toISOString().split("T")[0]}}
+function formatDateTime(timeStr){const date=new Date(timeStr);return date.toLocaleString("es-ES",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}
+function clearCharts(){chartInstances.forEach(chart=>chart.destroy());chartInstances=[];document.getElementById("chartsContainer").innerHTML="";document.getElementById('analysisContainer').style.display='none'}
+function showError(message){const errorElement=document.getElementById("error");errorElement.textContent=message;errorElement.style.display="block";setTimeout(()=>{errorElement.style.display="none"},5000)}
+function toggleLoading(isLoading){document.getElementById("loading").style.display=isLoading?"block":"none";document.getElementById("submitBtn").disabled=isLoading}
+async function fetchWeatherData(lat,lon,startDate,endDate){const hourlyVars=['temperature_2m','rain','snowfall','windspeed_10m','windgusts_10m','relativehumidity_2m','surface_pressure','dewpoint_2m'].join(",");const url=`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${startDate}&end_date=${endDate}&hourly=${hourlyVars}&timezone=auto`;const response=await fetch(url);if(!response.ok){throw new Error(`Error en la API: ${response.status}`)}
+return response.json()}
+async function executeQuery(){const selectedLocation=document.getElementById("locationSelect").value;const endDate=document.getElementById("endDate").value;if(!selectedLocation){showError("Por favor selecciona una ubicación.");return}
+const coord=coordinates.find(c=>c.id===selectedLocation);if(!coord){showError("Ubicación no válida.");return}
+const{start,end}=calculateDateRange(endDate);clearCharts();toggleLoading(!0);try{const weatherData=await fetchWeatherData(coord.lat,coord.long,start,end);if(!weatherData.hourly||!weatherData.hourly.time){throw new Error("Datos meteorológicos no disponibles")}
+const timestamps=weatherData.hourly.time;document.getElementById('analysisContainer').style.display='block';const alerts=analyzeAlerts(weatherData.hourly);const patterns=analyzePatterns(weatherData.hourly);const dateRange={start,end};const coordinatesInfo={lat:coord.lat,long:coord.long};createExecutiveSummary(weatherData.hourly,alerts,dateRange,coordinatesInfo);createStatsPanel(weatherData.hourly);createAlertsPanel(alerts);createPatternsPanel(patterns);createCombinedChart(weatherData.hourly,timestamps);createCorrelationChart(weatherData.hourly);const variableOrder=['temperature_2m','rain','snowfall','windspeed_10m','windgusts_10m','relativehumidity_2m','surface_pressure','dewpoint_2m'];variableOrder.forEach(variable=>{if(weatherData.hourly[variable]){createChart("chartsContainer",variable,weatherData.hourly[variable],timestamps)}})}catch(error){console.error("Error:",error);showError(`Error al obtener los datos: ${error.message}`);document.getElementById('analysisContainer').style.display='none'}finally{toggleLoading(!1)}}
+document.addEventListener("DOMContentLoaded",()=>{populateLocationSelect();document.getElementById("locationSelect").addEventListener("change",handleLocationChange);document.getElementById("weatherForm").addEventListener("submit",(event)=>{event.preventDefault();executeQuery()});document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',function(){const tabName=this.getAttribute('data-tab');switchTab(tabName)})});const today=new Date();const limitDate=new Date(today);limitDate.setDate(today.getDate()-5);const endDateInput=document.getElementById("endDate");endDateInput.max=limitDate.toISOString().split("T")[0];endDateInput.value=limitDate.toISOString().split("T")[0]})
+    </script>
+</body>
+</html>
