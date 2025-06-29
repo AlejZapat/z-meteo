@@ -1,4 +1,4 @@
-// Coordenadas de los puntos de medición
+// Coordenadas de los sitios de medición
 const coordinates = [
     { id: 'NPDA', lat: -30.120354, long: -71.219226},
     { id: '1', lat: -30.120529, long: -71.219709},

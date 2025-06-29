@@ -20,7 +20,7 @@
                     <div class="form-group">
                         <label for="locationSelect">Ubicación</label>
                         <select id="locationSelect" required>
-                            <option value="">Seleccionar punto de medición...</option>
+                            <option value="">Seleccionar sitio de medición...</option>
                         </select>
                     </div>
                     
@@ -166,7 +166,7 @@
 
     <script>
 
-        // Coordenadas de los puntos de medición
+        // Coordenadas de los sitios de medición
         const coordinates = [
             { id: 'NPDA', lat: -30.120354, long: -71.219226},
             { id: '1', lat: -30.120529, long: -71.219709},
@@ -1145,7 +1145,7 @@ function createChart(containerId,variableKey,data,timestamps){const config=WEATH
         <div class="chart-title">${config.label} (${config.unit})</div>
         <div id="chart-${variableKey}" style="height: 350px;"></div>
     `;document.getElementById(containerId).appendChild(chartContainer);const formattedTimestamps=timestamps.map(formatDateTime);const chartData=data.map((value,index)=>({x:formattedTimestamps[index],y:value!==null?Number(value):0}));const options={series:[{name:config.label,data:chartData}],chart:{type:'bar',height:350,toolbar:{show:!0,tools:{download:!0,zoom:!0,zoomin:!0,zoomout:!0,pan:!0,reset:!0}},animations:{enabled:!0,easing:'easeinout',speed:600}},colors:[config.color],plotOptions:{bar:{columnWidth:'70%',borderRadius:2,distributed:!1}},dataLabels:{enabled:!1},xaxis:{type:'category',title:{text:'Fecha y Hora',style:{fontSize:'12px',fontWeight:600,color:'#333'}},labels:{rotate:-45,style:{fontSize:'10px',colors:'#666'},maxHeight:60}},yaxis:{title:{text:config.unit,style:{fontSize:'12px',fontWeight:600,color:'#333'}},labels:{style:{fontSize:'11px',colors:'#666'},formatter:function(value){return value!==null?value.toFixed(1):'0'}}},tooltip:{theme:'light',y:{formatter:function(value){return `${value !== null ? value.toFixed(2) : '0'} ${config.unit}`}}},grid:{borderColor:'#e7e7e7',strokeDashArray:3,row:{colors:['#f8f9fa','transparent'],opacity:0.5}},theme:{mode:'light'},responsive:[{breakpoint:768,options:{chart:{height:280},xaxis:{labels:{rotate:-90,style:{fontSize:'9px'}}}}}]};try{const chart=new ApexCharts(document.querySelector(`#chart-${variableKey}`),options);chart.render();chartInstances.push(chart)}catch(error){console.error(`Error creating chart for ${variableKey}:`,error)}}
-function populateLocationSelect(){const select=document.getElementById("locationSelect");coordinates.forEach(coord=>{const option=document.createElement("option");option.value=coord.id;option.textContent=`Punto ${coord.id}`;select.appendChild(option)})}
+function populateLocationSelect(){const select=document.getElementById("locationSelect");coordinates.forEach(coord=>{const option=document.createElement("option");option.value=coord.id;option.textContent=`Torre ${coord.id}`;select.appendChild(option)})}
 function handleDataTypeChange(){const dataType=document.getElementById("dataType").value;const dateGroup=document.getElementById("dateGroup");const endDateInput=document.getElementById("endDate");if(dataType==="forecast"){dateGroup.style.display="none";endDateInput.removeAttribute("required")}else{dateGroup.style.display="block";endDateInput.setAttribute("required","true")}}
 function calculateHistoricalDateRange(endDateStr){const end=new Date(endDateStr);end.setHours(23,59,59);const start=new Date(end.getTime()-47*60*60*1000);return{start:start.toISOString().split("T")[0],end:end.toISOString().split("T")[0]}}
 function calculateForecastDateRange(){const start=new Date();const end=new Date();end.setDate(start.getDate()+6);return{start:start.toISOString().split("T")[0],end:end.toISOString().split("T")[0]}}

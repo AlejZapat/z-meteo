@@ -854,7 +854,7 @@ function populateLocationSelect() {
     coordinates.forEach(coord => {
         const option = document.createElement("option");
         option.value = coord.id;
-        option.textContent = `Punto ${coord.id}`;
+        option.textContent = `Torre ${coord.id}`;
         select.appendChild(option);
     });
 }
