@@ -6,12 +6,13 @@
     <title>Visualizador Climático v2.1.0</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.44.0/apexcharts.min.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
 </head>
 <body>
     <div class="main-container">
         <div class="header">
             <h1>Visualizador Climático</h1>
-            <p>Análisis meteorológico de las últimas 48 horas</p>
+            <p>Análisis meteorológico - Datos históricos y pronósticos</p>
         </div>
 
         <div class="control-panel">
@@ -25,13 +26,21 @@
                     </div>
                     
                     <div class="form-group">
+                        <label for="dataType">Tipo de Datos</label>
+                        <select id="dataType" required>
+                            <option value="historical">Datos Históricos</option>
+                            <option value="forecast">Pronóstico</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="dateGroup">
                         <label for="endDate">Fecha final</label>
                         <input type="date" id="endDate" required>
                     </div>
                     
                     <div class="form-group">
                         <button type="submit" class="btn-generate" id="submitBtn">
-                            Generar Análisis
+                            Analizar
                         </button>
                     </div>
                 </div>
@@ -42,7 +51,7 @@
             </form>
         </div>
 
-        <div id="loading" class="loading">Obteniendo datos meteorológicos</div>
+        <div id="loading" class="loading">Obteniendo datos meteorológicos...</div>
         <div id="error" class="error"></div>
         
         <div id="analysisContainer" style="display: none;">

@@ -1,13 +1,3 @@
-// Coordenadas de los puntos de medición
-const coordinates = [
-    { id: '820', lat: -33.108196, long: -71.148323 },
-    { id: '821', lat: -33.115667, long: -71.141415 },
-    { id: '822', lat: -33.118576, long: -71.138725 },
-    { id: '823', lat: -33.121148, long: -71.136129 },
-    { id: '824', lat: -33.121326, long: -71.136398 },
-    { id: '825', lat: -33.122188, long: -71.135384 }
-];
-
 // Configuración de variables meteorológicas
 const WEATHER_VARIABLES = {
     temperature_2m: { 
@@ -64,7 +54,12 @@ const WEATHER_VARIABLES = {
 let chartInstances = [];
 let analysisData = {};
 
-// FUNCIÓN PARA CALCULAR CORRELACIONES
+/**
+ * Calcula la correlación de Pearson entre dos arrays de datos
+ * @param {Array} x - Primer conjunto de datos
+ * @param {Array} y - Segundo conjunto de datos
+ * @returns {number} Coeficiente de correlación (-1 a 1)
+ */
 function calculateCorrelation(x, y) {
     // Filtrar valores nulos y asegurar que ambos arrays tengan la misma longitud
     const validPairs = [];
@@ -94,6 +89,11 @@ function calculateCorrelation(x, y) {
     return numerator / denominator;
 }
 
+/**
+ * Crea la matriz de correlaciones entre variables meteorológicas
+ * @param {Object} weatherData - Datos meteorológicos
+ * @returns {Object} Matriz de correlaciones y variables
+ */
 function createCorrelationMatrix(weatherData) {
     const variables = [
         { key: 'temperature_2m', label: 'Temperatura' },
@@ -125,6 +125,10 @@ function createCorrelationMatrix(weatherData) {
     return { matrix: correlationMatrix, variables };
 }
 
+/**
+ * Crea el gráfico de matriz de correlaciones
+ * @param {Object} weatherData - Datos meteorológicos
+ */
 function createCorrelationChart(weatherData) {
     const { matrix, variables } = createCorrelationMatrix(weatherData);
     
@@ -235,7 +239,9 @@ function createCorrelationChart(weatherData) {
     generateCorrelationInsights(matrix);
 }
 
-// FUNCIÓN PARA TOGGLE DEL PANEL DE INFORMACIÓN DE ALERTAS
+/**
+ * Alterna la visibilidad del panel de información de alertas
+ */
 function toggleAlertInfo() {
     const alertInfo = document.getElementById('alertInfo');
     if (alertInfo.style.display === 'none' || alertInfo.style.display === '') {
@@ -245,6 +251,10 @@ function toggleAlertInfo() {
     }
 }
 
+/**
+ * Genera insights basados en las correlaciones calculadas
+ * @param {Array} matrix - Matriz de correlaciones
+ */
 function generateCorrelationInsights(matrix) {
     const insights = [];
     
@@ -301,7 +311,10 @@ function generateCorrelationInsights(matrix) {
     });
 }
 
-// FUNCIÓN PARA MANEJAR NAVEGACIÓN DE PESTAÑAS
+/**
+ * Cambia entre pestañas de análisis
+ * @param {string} tabName - Nombre de la pestaña a activar
+ */
 function switchTab(tabName) {
     // Remover clase active de todos los botones
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -318,7 +331,11 @@ function switchTab(tabName) {
     document.getElementById(`${tabName}Tab`).classList.add('active');
 }
 
-// FUNCIONES DE ANÁLISIS ESTADÍSTICO
+/**
+ * Calcula estadísticas descriptivas de un conjunto de datos
+ * @param {Array} data - Array de valores numéricos
+ * @returns {Object|null} Estadísticas calculadas o null si no hay datos válidos
+ */
 function calculateStats(data) {
     const validData = data.filter(d => d !== null && d !== undefined && !isNaN(d));
     if (validData.length === 0) return null;
@@ -340,6 +357,11 @@ function calculateStats(data) {
     return { min, max, avg, median, stdDev, q1: sorted[q1Index], q3: sorted[q3Index] };
 }
 
+/**
+ * Analiza los datos meteorológicos para detectar alertas
+ * @param {Object} weatherData - Datos meteorológicos
+ * @returns {Array} Lista de alertas detectadas
+ */
 function analyzeAlerts(weatherData) {
     const alerts = [];
     
@@ -390,22 +412,30 @@ function analyzeAlerts(weatherData) {
     return alerts;
 }
 
-function analyzePatterns(weatherData) {
+/**
+ * Analiza patrones meteorológicos en los datos
+ * @param {Object} weatherData - Datos meteorológicos
+ * @param {string} dataType - Tipo de datos: 'historical' o 'forecast'
+ * @returns {Array} Lista de patrones detectados
+ */
+function analyzePatterns(weatherData, dataType) {
     const patterns = [];
     
     // Tendencia de temperatura
     const temps = weatherData.temperature_2m.filter(t => t !== null);
     const tempTrend = temps[temps.length - 1] - temps[0];
+    const trendLabel = dataType === 'forecast' ? 'Tendencia Esperada (7 días)' : 'Tendencia de Temperatura (48h)';
     patterns.push({
-        title: 'Tendencia de Temperatura (48h)',
+        title: trendLabel,
         value: tempTrend > 0 ? `Ascendente +${tempTrend.toFixed(1)}°C` : `Descendente ${tempTrend.toFixed(1)}°C`
     });
     
     // Acumulado de precipitación
     const totalRain = weatherData.rain.filter(r => r !== null).reduce((sum, r) => sum + r, 0);
     const totalSnow = weatherData.snowfall.filter(s => s !== null).reduce((sum, s) => sum + s, 0);
+    const precipLabel = dataType === 'forecast' ? 'Precipitación Esperada' : 'Precipitación Acumulada';
     patterns.push({
-        title: 'Precipitación Acumulada',
+        title: precipLabel,
         value: `Lluvia: ${totalRain.toFixed(1)}mm | Nieve: ${totalSnow.toFixed(1)}cm`
     });
     
@@ -420,15 +450,19 @@ function analyzePatterns(weatherData) {
     // Estabilidad de presión
     const pressures = weatherData.surface_pressure.filter(p => p !== null);
     const pressureStdDev = calculateStats(pressures)?.stdDev || 0;
+    const stabilityLabel = dataType === 'forecast' ? 'Estabilidad Atmosférica Esperada' : 'Estabilidad Atmosférica';
     patterns.push({
-        title: 'Estabilidad Atmosférica',
+        title: stabilityLabel,
         value: pressureStdDev < 2 ? 'Estable' : pressureStdDev < 5 ? 'Moderadamente variable' : 'Muy variable'
     });
     
     return patterns;
 }
 
-// FUNCIONES DE CREACIÓN DE PANELES
+/**
+ * Crea el panel de estadísticas principales
+ * @param {Object} weatherData - Datos meteorológicos
+ */
 function createStatsPanel(weatherData) {
     const statsContainer = document.getElementById('statsPanel');
     statsContainer.innerHTML = '';
@@ -457,6 +491,10 @@ function createStatsPanel(weatherData) {
     });
 }
 
+/**
+ * Crea el panel de alertas meteorológicas
+ * @param {Array} alerts - Lista de alertas detectadas
+ */
 function createAlertsPanel(alerts) {
     const alertsList = document.getElementById('alertsList');
     alertsList.innerHTML = '';
@@ -477,6 +515,10 @@ function createAlertsPanel(alerts) {
     });
 }
 
+/**
+ * Crea el panel de análisis de patrones
+ * @param {Array} patterns - Lista de patrones detectados
+ */
 function createPatternsPanel(patterns) {
     const patternsList = document.getElementById('patternsList');
     patternsList.innerHTML = '';
@@ -492,7 +534,15 @@ function createPatternsPanel(patterns) {
     });
 }
 
-function createExecutiveSummary(weatherData, alerts, dateRange, coordinates) {
+/**
+ * Crea el resumen ejecutivo con información meteorológica
+ * @param {Object} weatherData - Datos meteorológicos
+ * @param {Array} alerts - Lista de alertas detectadas
+ * @param {Object} dateRange - Rango de fechas del análisis
+ * @param {Object} coordinates - Coordenadas de la ubicación
+ * @param {string} dataType - Tipo de datos: 'historical' o 'forecast'
+ */
+function createExecutiveSummary(weatherData, alerts, dateRange, coordinates, dataType) {
     const summaryContainer = document.getElementById('executiveSummary');
     
     const tempStats = calculateStats(weatherData.temperature_2m);
@@ -502,10 +552,21 @@ function createExecutiveSummary(weatherData, alerts, dateRange, coordinates) {
     const alertLevel = alerts.some(a => a.level === 'high') ? 'ALTO' : 
                      alerts.some(a => a.level === 'medium') ? 'MEDIO' : 'BAJO';
     
+    let periodText = '';
+    let titleText = '';
+    
+    if (dataType === 'forecast') {
+        titleText = '🔮 Pronóstico Meteorológico';
+        periodText = `Pronóstico para los próximos 7 días desde ${dateRange.start} hasta ${dateRange.end} en la coordenada [${coordinates.lat}, ${coordinates.long}]`;
+    } else {
+        titleText = '📋 Resumen Ejecutivo';
+        periodText = `Desde las 00:00 horas del ${dateRange.start} hasta las 23:59 horas del ${dateRange.end} en la coordenada [${coordinates.lat}, ${coordinates.long}]`;
+    }
+    
     summaryContainer.innerHTML = `
-        <div class="summary-title">📋 Resumen Ejecutivo</div>
+        <div class="summary-title">${titleText}</div>
         <div class="summary-subtitle">
-            Desde las 00:00 horas del ${dateRange.start} hasta las 23:59 horas del ${dateRange.end} en la coordenada [${coordinates.lat}, ${coordinates.long}]
+            ${periodText}
         </div>
         <div class="summary-grid">
             <div class="summary-item">
@@ -514,11 +575,11 @@ function createExecutiveSummary(weatherData, alerts, dateRange, coordinates) {
             </div>
             <div class="summary-item">
                 <div class="summary-value">${totalRain.toFixed(1)}mm</div>
-                <div class="summary-label">Lluvia Total</div>
+                <div class="summary-label">${dataType === 'forecast' ? 'Lluvia Esperada' : 'Lluvia Total'}</div>
             </div>
             <div class="summary-item">
                 <div class="summary-value">${maxWind.toFixed(0)} km/h</div>
-                <div class="summary-label">Viento Máximo</div>
+                <div class="summary-label">${dataType === 'forecast' ? 'Viento Máximo Esperado' : 'Viento Máximo'}</div>
             </div>
             <div class="summary-item">
                 <div class="summary-value">${alertLevel}</div>
@@ -528,7 +589,11 @@ function createExecutiveSummary(weatherData, alerts, dateRange, coordinates) {
     `;
 }
 
-// FUNCIONES DE GRÁFICOS
+/**
+ * Crea el gráfico combinado de temperatura, humedad y presión
+ * @param {Object} weatherData - Datos meteorológicos
+ * @param {Array} timestamps - Array de timestamps
+ */
 function createCombinedChart(weatherData, timestamps) {
     const formattedTimestamps = timestamps.map(formatDateTime);
     
@@ -634,6 +699,13 @@ function createCombinedChart(weatherData, timestamps) {
     chartInstances.push(chart);
 }
 
+/**
+ * Crea un gráfico individual para una variable meteorológica
+ * @param {string} containerId - ID del contenedor donde crear el gráfico
+ * @param {string} variableKey - Clave de la variable meteorológica
+ * @param {Array} data - Datos de la variable
+ * @param {Array} timestamps - Array de timestamps
+ */
 function createChart(containerId, variableKey, data, timestamps) {
     const config = WEATHER_VARIABLES[variableKey];
     
@@ -774,7 +846,9 @@ function createChart(containerId, variableKey, data, timestamps) {
     }
 }
 
-// FUNCIONES UTILITARIAS
+/**
+ * Pobla el selector de ubicaciones con las coordenadas disponibles
+ */
 function populateLocationSelect() {
     const select = document.getElementById("locationSelect");
     coordinates.forEach(coord => {
@@ -785,12 +859,29 @@ function populateLocationSelect() {
     });
 }
 
-function handleLocationChange() {
-    const selected = document.getElementById("locationSelect").value;
-    // Ya no necesitamos mostrar las coordenadas aquí porque se moverán al resumen ejecutivo
+/**
+ * Maneja el cambio en el tipo de datos (histórico/pronóstico)
+ */
+function handleDataTypeChange() {
+    const dataType = document.getElementById("dataType").value;
+    const dateGroup = document.getElementById("dateGroup");
+    const endDateInput = document.getElementById("endDate");
+    
+    if (dataType === "forecast") {
+        dateGroup.style.display = "none";
+        endDateInput.removeAttribute("required");
+    } else {
+        dateGroup.style.display = "block";
+        endDateInput.setAttribute("required", "true");
+    }
 }
 
-function calculateDateRange(endDateStr) {
+/**
+ * Calcula el rango de fechas para datos históricos
+ * @param {string} endDateStr - Fecha final en formato YYYY-MM-DD
+ * @returns {Object} Objeto con fechas de inicio y fin
+ */
+function calculateHistoricalDateRange(endDateStr) {
     const end = new Date(endDateStr);
     end.setHours(23, 59, 59);
     const start = new Date(end.getTime() - 47 * 60 * 60 * 1000);
@@ -800,6 +891,25 @@ function calculateDateRange(endDateStr) {
     };
 }
 
+/**
+ * Calcula el rango de fechas para pronóstico (próximos 7 días)
+ * @returns {Object} Objeto con fechas de inicio y fin del pronóstico
+ */
+function calculateForecastDateRange() {
+    const start = new Date();
+    const end = new Date();
+    end.setDate(start.getDate() + 6);
+    return {
+        start: start.toISOString().split("T")[0],
+        end: end.toISOString().split("T")[0]
+    };
+}
+
+/**
+ * Formatea una fecha y hora para mostrar en los gráficos
+ * @param {string} timeStr - String de fecha/hora
+ * @returns {string} Fecha formateada
+ */
 function formatDateTime(timeStr) {
     const date = new Date(timeStr);
     return date.toLocaleString("es-ES", {
@@ -810,6 +920,9 @@ function formatDateTime(timeStr) {
     });
 }
 
+/**
+ * Limpia todos los gráficos existentes
+ */
 function clearCharts() {
     chartInstances.forEach(chart => chart.destroy());
     chartInstances = [];
@@ -817,6 +930,10 @@ function clearCharts() {
     document.getElementById('analysisContainer').style.display = 'none';
 }
 
+/**
+ * Muestra un mensaje de error al usuario
+ * @param {string} message - Mensaje de error a mostrar
+ */
 function showError(message) {
     const errorElement = document.getElementById("error");
     errorElement.textContent = message;
@@ -826,13 +943,24 @@ function showError(message) {
     }, 5000);
 }
 
+/**
+ * Controla la visibilidad del indicador de carga
+ * @param {boolean} isLoading - Si está cargando o no
+ */
 function toggleLoading(isLoading) {
     document.getElementById("loading").style.display = isLoading ? "block" : "none";
     document.getElementById("submitBtn").disabled = isLoading;
 }
 
-// API CALL
-async function fetchWeatherData(lat, lon, startDate, endDate) {
+/**
+ * Obtiene datos meteorológicos históricos desde la API de Open-Meteo
+ * @param {number} lat - Latitud de la ubicación
+ * @param {number} lon - Longitud de la ubicación  
+ * @param {string} startDate - Fecha de inicio en formato YYYY-MM-DD
+ * @param {string} endDate - Fecha de fin en formato YYYY-MM-DD
+ * @returns {Promise<Object>} Datos meteorológicos históricos
+ */
+async function fetchHistoricalWeatherData(lat, lon, startDate, endDate) {
     const hourlyVars = [
         'temperature_2m',
         'rain', 
@@ -854,13 +982,54 @@ async function fetchWeatherData(lat, lon, startDate, endDate) {
     return response.json();
 }
 
+/**
+ * Obtiene datos de pronóstico meteorológico desde la API de Open-Meteo
+ * @param {number} lat - Latitud de la ubicación
+ * @param {number} lon - Longitud de la ubicación
+ * @returns {Promise<Object>} Datos de pronóstico meteorológico
+ */
+async function fetchForecastWeatherData(lat, lon) {
+    const hourlyVars = [
+        'temperature_2m',
+        'rain', 
+        'snowfall',
+        'windspeed_10m',
+        'windgusts_10m',
+        'relativehumidity_2m',
+        'surface_pressure',
+        'dewpoint_2m'
+    ].join(",");
+    
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=${hourlyVars}&timezone=auto&forecast_days=7`;
+    
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Error en la API: ${response.status}`);
+    }
+    
+    return response.json();
+}
+
 // FUNCIÓN PRINCIPAL DE CONSULTA
+/**
+ * Ejecuta la consulta meteorológica principal
+ * Esta función determina qué API usar basándose en el valor del campo dataType:
+ * - "historical": Usa fetchHistoricalWeatherData() con archive-api.open-meteo.com
+ * - "forecast": Usa fetchForecastWeatherData() con api.open-meteo.com
+ */
 async function executeQuery() {
     const selectedLocation = document.getElementById("locationSelect").value;
+    const dataType = document.getElementById("dataType").value;
     const endDate = document.getElementById("endDate").value;
 
     if (!selectedLocation) {
         showError("Por favor selecciona una ubicación.");
+        return;
+    }
+
+    // Para pronóstico, no necesitamos fecha
+    if (dataType === "historical" && !endDate) {
+        showError("Por favor selecciona una fecha para datos históricos.");
         return;
     }
 
@@ -870,12 +1039,24 @@ async function executeQuery() {
         return;
     }
 
-    const { start, end } = calculateDateRange(endDate);
     clearCharts();
     toggleLoading(true);
 
     try {
-        const weatherData = await fetchWeatherData(coord.lat, coord.long, start, end);
+        let weatherData;
+        let dateRange;
+        
+        // AQUÍ ES DONDE SE DECIDE QUÉ API USAR
+        if (dataType === "forecast") {
+            // USAR API DE PRONÓSTICO
+            weatherData = await fetchForecastWeatherData(coord.lat, coord.long);
+            dateRange = calculateForecastDateRange();
+        } else {
+            // USAR API HISTÓRICA
+            const { start, end } = calculateHistoricalDateRange(endDate);
+            weatherData = await fetchHistoricalWeatherData(coord.lat, coord.long, start, end);
+            dateRange = { start, end };
+        }
         
         if (!weatherData.hourly || !weatherData.hourly.time) {
             throw new Error("Datos meteorológicos no disponibles");
@@ -888,14 +1069,13 @@ async function executeQuery() {
 
         // Crear análisis avanzados
         const alerts = analyzeAlerts(weatherData.hourly);
-        const patterns = analyzePatterns(weatherData.hourly);
+        const patterns = analyzePatterns(weatherData.hourly, dataType);
         
         // Preparar información de fechas y coordenadas
-        const dateRange = { start, end };
         const coordinatesInfo = { lat: coord.lat, long: coord.long };
         
         // Generar paneles de análisis
-        createExecutiveSummary(weatherData.hourly, alerts, dateRange, coordinatesInfo);
+        createExecutiveSummary(weatherData.hourly, alerts, dateRange, coordinatesInfo, dataType);
         createStatsPanel(weatherData.hourly);
         createAlertsPanel(alerts);
         createPatternsPanel(patterns);
@@ -935,7 +1115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     populateLocationSelect();
     
     // Event listeners
-    document.getElementById("locationSelect").addEventListener("change", handleLocationChange);
+    document.getElementById("dataType").addEventListener("change", handleDataTypeChange);
     
     document.getElementById("weatherForm").addEventListener("submit", (event) => {
         event.preventDefault();
@@ -950,7 +1130,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Establecer fecha límite (hoy - 5 días)
+    // Configuración inicial del formulario
+    handleDataTypeChange();
+
+    // Establecer fecha límite para datos históricos (hoy - 5 días)
     const today = new Date();
     const limitDate = new Date(today);
     limitDate.setDate(today.getDate() - 5);
